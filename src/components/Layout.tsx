@@ -15,6 +15,8 @@ const Layout = ({ children }: LayoutProps) => {
     { name: 'Accueil', href: '/', icon: Home },
     { name: 'Patients', href: '/patients', icon: Users },
     { name: 'Comptes Rendus', href: '/reports', icon: FileText },
+    { name: 'Correspondants', href: '/correspondants', icon: Users },
+    { name: 'Stock', href: '/stock', icon: Search },
   ];
 
   const isActive = (path: string) => location.pathname === path;

@@ -8,6 +8,8 @@ import Dashboard from "./pages/Dashboard";
 import Patients from "./pages/Patients";
 import Reports from "./pages/Reports";
 import NewReport from "./pages/NewReport";
+import Correspondants from "./pages/Correspondants";
+import Stock from "./pages/Stock";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ const App = () => (
             <Route path="/patients" element={<Patients />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/reports/new" element={<NewReport />} />
+            <Route path="/correspondants" element={<Correspondants />} />
+            <Route path="/stock" element={<Stock />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
