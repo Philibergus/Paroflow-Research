@@ -1,15 +1,18 @@
 import { useState } from 'react';
-import { Plus, Search, Package, AlertTriangle, TrendingDown, ShoppingCart, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, Package, AlertTriangle, TrendingDown, ShoppingCart, Edit, Trash2, Settings, BarChart3, Calendar } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import AddProductDialog from '@/components/AddProductDialog';
+import NewOrderDialog from '@/components/NewOrderDialog';
 
 const Stock = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('tous');
+  const [globalThreshold, setGlobalThreshold] = useState(10);
 
   // Mock data - will be replaced with Supabase data
   const products = [
@@ -93,6 +96,19 @@ const Stock = () => {
     return matchesSearch && matchesCategory;
   });
 
+  const getStockStatus = (quantite: number, seuil: number) => {
+    if (quantite <= seuil * 0.3) return 'Stock critique';
+    if (quantite <= seuil * 0.7) return 'Stock faible';
+    return 'En stock';
+  };
+
+  const getStockColor = (quantite: number, seuil: number) => {
+    const ratio = quantite / seuil;
+    if (ratio <= 0.3) return 'text-destructive';
+    if (ratio <= 0.7) return 'text-orange-600';
+    return 'text-blue-600';
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'En stock': return 'default';
@@ -127,13 +143,25 @@ const Stock = () => {
         </div>
         <div className="flex space-x-2">
           <Button variant="outline">
-            <ShoppingCart className="mr-2 h-4 w-4" />
-            Nouvelle Commande
+            <Calendar className="mr-2 h-4 w-4" />
+            Historique
           </Button>
-          <Button className="bg-primary hover:bg-primary/90">
-            <Plus className="mr-2 h-4 w-4" />
-            Ajouter Produit
+          <Button variant="outline">
+            <BarChart3 className="mr-2 h-4 w-4" />
+            Statistiques
           </Button>
+          <NewOrderDialog>
+            <Button variant="outline">
+              <ShoppingCart className="mr-2 h-4 w-4" />
+              Nouvelle Commande
+            </Button>
+          </NewOrderDialog>
+          <AddProductDialog>
+            <Button className="bg-primary hover:bg-primary/90">
+              <Plus className="mr-2 h-4 w-4" />
+              Ajouter Produit
+            </Button>
+          </AddProductDialog>
         </div>
       </div>
 
@@ -180,7 +208,7 @@ const Stock = () => {
             <CardTitle className="text-base">Valeur Stock</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl text-muted-foreground">
               {valeurtotale.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
             </div>
           </CardContent>
@@ -197,7 +225,7 @@ const Stock = () => {
       </div>
 
       {/* Search and Filters */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle className="text-base">Recherche</CardTitle>
@@ -233,6 +261,24 @@ const Stock = () => {
                 ))}
               </SelectContent>
             </Select>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center">
+              <Settings className="mr-2 h-4 w-4" />
+              Seuil Global
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Input
+              type="number"
+              value={globalThreshold}
+              onChange={(e) => setGlobalThreshold(Number(e.target.value))}
+              min="1"
+              placeholder="10"
+            />
           </CardContent>
         </Card>
       </div>
@@ -273,7 +319,9 @@ const Stock = () => {
                   </TableCell>
                   <TableCell>
                     <div>
-                      <div className="font-semibold">{product.quantiteStock}</div>
+                      <div className={`font-semibold ${getStockColor(product.quantiteStock, product.seuilAlerte)}`}>
+                        {product.quantiteStock}
+                      </div>
                       <div className="text-xs text-muted-foreground">
                         Seuil: {product.seuilAlerte}
                       </div>
@@ -283,15 +331,15 @@ const Stock = () => {
                     {product.prix.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
                   </TableCell>
                   <TableCell>
-                    <div className="font-semibold">
+                    <div className="text-muted-foreground">
                       {(product.quantiteStock * product.prix).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
                     </div>
                   </TableCell>
                   <TableCell>{product.fournisseur}</TableCell>
                   <TableCell>
-                    <Badge variant={getStatusColor(product.status)} className="flex items-center gap-1 w-fit">
-                      {getStatusIcon(product.status)}
-                      {product.status}
+                    <Badge variant={getStatusColor(getStockStatus(product.quantiteStock, product.seuilAlerte))} className="flex items-center gap-1 w-fit">
+                      {getStatusIcon(getStockStatus(product.quantiteStock, product.seuilAlerte))}
+                      {getStockStatus(product.quantiteStock, product.seuilAlerte)}
                     </Badge>
                   </TableCell>
                   <TableCell>
