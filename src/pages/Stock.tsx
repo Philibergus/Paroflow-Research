@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Search, Package, AlertTriangle, TrendingDown, ShoppingCart, Edit, Trash2, Settings, BarChart3, Calendar } from 'lucide-react';
+import { Plus, Search, ShoppingCart, Edit, Trash2, BarChart3, Calendar, ChevronUp, ChevronDown } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,11 +11,8 @@ import NewOrderDialog from '@/components/NewOrderDialog';
 
 const Stock = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterCategory, setFilterCategory] = useState('tous');
-  const [globalThreshold, setGlobalThreshold] = useState(10);
-
-  // Mock data - will be replaced with Supabase data
-  const products = [
+  const [filterCategoryIndex, setFilterCategoryIndex] = useState(0);
+  const [products, setProducts] = useState([
     {
       id: 1,
       nom: 'Curettes Gracey 5-6',
@@ -81,9 +78,19 @@ const Stock = () => {
       utilisationMensuelle: 4,
       status: 'En stock',
     },
-  ];
+  ]);
 
   const categories = ['tous', 'Instrumentation', 'Pharmacie', 'Consommables', 'Implantologie', 'Matériaux'];
+  
+  const currentCategory = categories[filterCategoryIndex];
+  
+  const updateThreshold = (productId: number, delta: number) => {
+    setProducts(prev => prev.map(p => 
+      p.id === productId 
+        ? { ...p, seuilAlerte: Math.max(1, p.seuilAlerte + delta) }
+        : p
+    ));
+  };
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = 
@@ -91,7 +98,7 @@ const Stock = () => {
       product.reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.fournisseur.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesCategory = filterCategory === 'tous' || product.categorie === filterCategory;
+    const matchesCategory = currentCategory === 'tous' || product.categorie === currentCategory;
     
     return matchesSearch && matchesCategory;
   });
@@ -118,18 +125,6 @@ const Stock = () => {
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'En stock': return <Package className="h-4 w-4" />;
-      case 'Stock faible': return <TrendingDown className="h-4 w-4" />;
-      case 'Stock critique': return <AlertTriangle className="h-4 w-4" />;
-      default: return <Package className="h-4 w-4" />;
-    }
-  };
-
-  const stockCritique = products.filter(p => p.status === 'Stock critique').length;
-  const stockFaible = products.filter(p => p.status === 'Stock faible').length;
-  const valeurtotale = products.reduce((total, p) => total + (p.quantiteStock * p.prix), 0);
 
   return (
     <div className="space-y-6">
@@ -165,67 +160,8 @@ const Stock = () => {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-5">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center">
-              <Package className="mr-2 h-4 w-4" />
-              Total Produits
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-primary">{products.length}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center">
-              <AlertTriangle className="mr-2 h-4 w-4" />
-              Stock Critique
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-destructive">{stockCritique}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center">
-              <TrendingDown className="mr-2 h-4 w-4" />
-              Stock Faible
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{stockFaible}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Valeur Stock</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl text-muted-foreground">
-              {valeurtotale.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Alertes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{stockCritique + stockFaible}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="grid gap-4 md:grid-cols-4">
+      {/* Search and Filter */}
+      <div className="grid gap-4 md:grid-cols-3">
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle className="text-base">Recherche</CardTitle>
@@ -249,36 +185,29 @@ const Stock = () => {
             <CardTitle className="text-base">Catégorie</CardTitle>
           </CardHeader>
           <CardContent>
-            <Select value={filterCategory} onValueChange={setFilterCategory}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category === 'tous' ? 'Toutes catégories' : category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center">
-              <Settings className="mr-2 h-4 w-4" />
-              Seuil Global
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Input
-              type="number"
-              value={globalThreshold}
-              onChange={(e) => setGlobalThreshold(Number(e.target.value))}
-              min="1"
-              placeholder="10"
-            />
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">
+                {currentCategory === 'tous' ? 'Toutes catégories' : currentCategory}
+              </span>
+              <div className="flex flex-col space-y-1">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-5 w-5 p-0"
+                  onClick={() => setFilterCategoryIndex(prev => prev > 0 ? prev - 1 : categories.length - 1)}
+                >
+                  <ChevronUp className="h-3 w-3" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-5 w-5 p-0"
+                  onClick={() => setFilterCategoryIndex(prev => (prev + 1) % categories.length)}
+                >
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -318,12 +247,32 @@ const Stock = () => {
                     <Badge variant="outline">{product.categorie}</Badge>
                   </TableCell>
                   <TableCell>
-                    <div>
-                      <div className={`font-semibold ${getStockColor(product.quantiteStock, product.seuilAlerte)}`}>
-                        {product.quantiteStock}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Seuil: {product.seuilAlerte}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className={`font-semibold ${getStockColor(product.quantiteStock, product.seuilAlerte)}`}>
+                          {product.quantiteStock}
+                        </div>
+                        <div className="text-xs text-muted-foreground flex items-center gap-1">
+                          Seuil: {product.seuilAlerte}
+                          <div className="flex flex-col ml-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-4 w-4 p-0"
+                              onClick={() => updateThreshold(product.id, 1)}
+                            >
+                              <ChevronUp className="h-2 w-2" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-4 w-4 p-0"
+                              onClick={() => updateThreshold(product.id, -1)}
+                            >
+                              <ChevronDown className="h-2 w-2" />
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </TableCell>
@@ -337,8 +286,7 @@ const Stock = () => {
                   </TableCell>
                   <TableCell>{product.fournisseur}</TableCell>
                   <TableCell>
-                    <Badge variant={getStatusColor(getStockStatus(product.quantiteStock, product.seuilAlerte))} className="flex items-center gap-1 w-fit">
-                      {getStatusIcon(getStockStatus(product.quantiteStock, product.seuilAlerte))}
+                    <Badge variant={getStatusColor(getStockStatus(product.quantiteStock, product.seuilAlerte))} className="w-fit">
                       {getStockStatus(product.quantiteStock, product.seuilAlerte)}
                     </Badge>
                   </TableCell>
