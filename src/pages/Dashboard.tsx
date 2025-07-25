@@ -63,131 +63,69 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-medical-text">Command Center</h1>
-          <p className="text-muted-foreground">
-            Centre de contrôle intelligent de votre cabinet
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <AICommandDialog>
-            <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
-              <Sparkles className="mr-2 h-4 w-4" />
-              Assistant IA
-            </Button>
-          </AICommandDialog>
-          <Button 
-            onClick={() => navigate('/reports/new')}
-            variant="outline"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Nouveau CR
-          </Button>
-        </div>
+      <div className="text-center space-y-2">
+        <h1 className="text-4xl font-bold text-medical-text">Command Center</h1>
+        <p className="text-lg text-muted-foreground">
+          Décrivez votre situation, l'IA s'occupe du reste
+        </p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className={`h-4 w-4 ${stat.color}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">
-                {stat.description}
+      {/* Main Command Interface */}
+      <AICommandDialog>
+        <div className="w-full max-w-2xl p-8 border-2 border-dashed border-primary/30 rounded-xl hover:border-primary/50 transition-colors cursor-pointer bg-gradient-to-br from-primary/5 to-primary/10">
+          <div className="text-center space-y-4">
+            <Sparkles className="h-12 w-12 text-primary mx-auto" />
+            <div>
+              <h2 className="text-xl font-semibold mb-2">Commande Intelligente</h2>
+              <p className="text-muted-foreground">
+                Cliquez ici pour ouvrir l'assistant IA
               </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Recent Reports */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Comptes Rendus Récents</CardTitle>
-            <CardDescription>
-              Derniers rapports créés
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentReports.map((report) => (
-                <div
-                  key={report.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
-                >
-                  <div>
-                    <p className="font-medium">{report.patient}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {report.type} • {report.date}
-                    </p>
-                  </div>
-                  <div className={`px-2 py-1 rounded-full text-xs ${
-                    report.status === 'Terminé' 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {report.status}
-                  </div>
-                </div>
-              ))}
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Actions Rapides</CardTitle>
-            <CardDescription>
-              Raccourcis vers les tâches courantes
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <Button 
-                variant="outline" 
-                className="w-full justify-start"
-                onClick={() => navigate('/patients/new')}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Ajouter un patient
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full justify-start"
-                onClick={() => navigate('/reports/new')}
-              >
-                <FileText className="mr-2 h-4 w-4" />
-                Créer un compte rendu
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full justify-start"
-                onClick={() => navigate('/patients')}
-              >
-                <Users className="mr-2 h-4 w-4" />
-                Voir tous les patients
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full justify-start"
-                onClick={() => navigate('/reports')}
-              >
-                <FileText className="mr-2 h-4 w-4" />
-                Voir tous les comptes rendus
-              </Button>
+            <div className="text-sm text-muted-foreground space-y-1">
+              <p>"Pose un implant sur 16 pour Mme Dupont"</p>
+              <p>"Ajoute à la to-do: ouvrir au livreur à 11h"</p>
+              <p>"Ordonnance préop pour M. Martin"</p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+      </AICommandDialog>
+
+      {/* Quick shortcuts - very discrete */}
+      <div className="flex gap-4 opacity-60 hover:opacity-100 transition-opacity">
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={() => navigate('/patients')}
+          className="text-xs"
+        >
+          Patients
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={() => navigate('/reports')}
+          className="text-xs"
+        >
+          Comptes Rendus
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={() => navigate('/todo')}
+          className="text-xs"
+        >
+          To-Do
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={() => navigate('/stock')}
+          className="text-xs"
+        >
+          Stock
+        </Button>
       </div>
     </div>
   );
