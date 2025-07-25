@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Calendar, Clock, CheckCircle, Circle, Trash2, Edit } from 'lucide-react';
+import { Plus, Calendar, Clock, CheckCircle, Circle, Trash2, Edit, User, Stethoscope } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,36 +14,56 @@ interface TodoItem {
   status: 'pending' | 'in-progress' | 'completed';
   dueDate?: string;
   createdAt: string;
+  category: 'general' | 'patient' | 'correspondant';
+  linkedTo?: string;
+  dueTime?: string;
 }
 
 const Todo = () => {
   const [todos, setTodos] = useState<TodoItem[]>([
     {
       id: 1,
-      title: 'Appeler Mme Dupont pour suivi',
-      description: 'Vérifier cicatrisation post-chirurgie',
+      title: 'Ouvrir au livreur à 11h',
+      description: 'Livraison matériel implantaire',
       priority: 'high',
       status: 'pending',
       dueDate: '2025-07-25',
+      dueTime: '11:00',
       createdAt: '2025-07-20',
+      category: 'general',
     },
     {
       id: 2,
-      title: 'Commander Bio-Oss 0.5g',
-      description: 'Stock bas - 2 unités restantes',
+      title: 'Préparer courrier Dr Dubois',
+      description: 'Implant 16 pour Mme Martin - compte-rendu',
       priority: 'medium',
       status: 'pending',
-      dueDate: '2025-07-24',
+      dueDate: '2025-07-25',
       createdAt: '2025-07-22',
+      category: 'correspondant',
+      linkedTo: 'Dr Dubois',
     },
     {
       id: 3,
-      title: 'Envoyer CR à Dr Martin',
-      description: 'Bilan parodontal de M. Lemaire',
-      priority: 'medium',
+      title: 'Vérifier consentement éclairé',
+      description: 'M. Leclerc - chirurgie parodontale',
+      priority: 'high',
       status: 'completed',
       dueDate: '2025-07-23',
       createdAt: '2025-07-21',
+      category: 'patient',
+      linkedTo: 'M. Leclerc',
+    },
+    {
+      id: 4,
+      title: 'Ordonnance préopératoire',
+      description: 'Mme Truc - implant 16',
+      priority: 'medium',
+      status: 'pending',
+      dueDate: '2025-07-26',
+      createdAt: '2025-07-23',
+      category: 'patient',
+      linkedTo: 'Mme Truc',
     },
   ]);
 
@@ -57,6 +77,7 @@ const Todo = () => {
         priority: 'medium',
         status: 'pending',
         createdAt: new Date().toISOString().split('T')[0],
+        category: 'general',
       };
       setTodos([todo, ...todos]);
       setNewTodo('');
@@ -91,6 +112,14 @@ const Todo = () => {
   const filterTodos = (status?: string) => {
     if (!status) return todos;
     return todos.filter(todo => todo.status === status);
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'patient': return <User className="h-3 w-3" />;
+      case 'correspondant': return <Stethoscope className="h-3 w-3" />;
+      default: return <Circle className="h-3 w-3" />;
+    }
   };
 
   return (

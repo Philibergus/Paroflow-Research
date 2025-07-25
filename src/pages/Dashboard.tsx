@@ -1,7 +1,8 @@
-import { Plus, Calendar, Users, FileText, Activity } from 'lucide-react';
+import { Plus, Calendar, Users, FileText, Activity, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { AICommandDialog } from '@/components/AICommandDialog';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -66,18 +67,26 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-medical-text">Tableau de bord</h1>
+          <h1 className="text-3xl font-bold text-medical-text">Command Center</h1>
           <p className="text-muted-foreground">
-            Vue d'ensemble de votre cabinet
+            Centre de contrôle intelligent de votre cabinet
           </p>
         </div>
-        <Button 
-          onClick={() => navigate('/reports/new')}
-          className="bg-primary hover:bg-primary/90"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Nouveau Compte Rendu
-        </Button>
+        <div className="flex gap-3">
+          <AICommandDialog>
+            <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
+              <Sparkles className="mr-2 h-4 w-4" />
+              Assistant IA
+            </Button>
+          </AICommandDialog>
+          <Button 
+            onClick={() => navigate('/reports/new')}
+            variant="outline"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Nouveau CR
+          </Button>
+        </div>
       </div>
 
       {/* Stats Grid */}

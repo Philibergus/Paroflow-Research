@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Users, FileText, Search } from 'lucide-react';
+import { Home, Users, FileText, Search, CheckSquare, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -12,11 +12,12 @@ const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
 
   const navigation = [
-    { name: 'Accueil', href: '/', icon: Home },
+    { name: 'Command Center', href: '/', icon: Home },
     { name: 'Patients', href: '/patients', icon: Users },
     { name: 'Comptes Rendus', href: '/reports', icon: FileText },
     { name: 'Correspondants', href: '/correspondants', icon: Users },
-    { name: 'Stock', href: '/stock', icon: Search },
+    { name: 'To-Do List', href: '/todo', icon: CheckSquare },
+    { name: 'Stock', href: '/stock', icon: Package },
   ];
 
   const isActive = (path: string) => location.pathname === path;
