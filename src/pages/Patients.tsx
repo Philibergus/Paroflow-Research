@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { Plus, Search, Download, Upload, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, Download, Upload, Edit, Trash2, Calendar } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { TreatmentTimeline } from '@/components/TreatmentTimeline';
 
 const Patients = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedPatient, setSelectedPatient] = useState<any>(null);
 
   // Mock data - will be replaced with Supabase data
   const patients = [
@@ -60,6 +62,22 @@ const Patients = () => {
     }
     return age;
   };
+  const openTreatmentPlan = (patient: any) => {
+    setSelectedPatient(patient);
+  };
+
+  const closeTreatmentPlan = () => {
+    setSelectedPatient(null);
+  };
+
+  if (selectedPatient) {
+    return (
+      <TreatmentTimeline 
+        patientName={`${selectedPatient.prenom} ${selectedPatient.nom}`}
+        onClose={closeTreatmentPlan}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -152,7 +170,11 @@ const Patients = () => {
             </TableHeader>
             <TableBody>
               {filteredPatients.map((patient) => (
-                <TableRow key={patient.id} className="hover:bg-accent/50">
+                <TableRow 
+                  key={patient.id} 
+                  className="hover:bg-accent/50 cursor-pointer"
+                  onClick={() => openTreatmentPlan(patient)}
+                >
                   <TableCell className="font-medium">{patient.nom}</TableCell>
                   <TableCell>{patient.prenom}</TableCell>
                   <TableCell>{calculateAge(patient.dateNaissance)} ans</TableCell>
@@ -168,10 +190,30 @@ const Patients = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openTreatmentPlan(patient);
+                        }}
+                        title="Voir le plan de traitement"
+                      >
+                        <Calendar className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-destructive hover:text-destructive"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
