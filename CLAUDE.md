@@ -2,6 +2,22 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🚨 PREMIÈRE CHOSE À FAIRE APRÈS /init
+
+**IMPORTANT** : Lire immédiatement le fichier `GUIDE-REPRISE.md` pour comprendre l'état actuel du projet et reprendre le développement efficacement.
+
+```
+Commande: Read le fichier GUIDE-REPRISE.md dès le début de chaque session
+```
+
+Le guide contient :
+- ⚡ Démarrage rapide (2 minutes)  
+- 📊 État actuel du projet (ce qui fonctionne/ne fonctionne pas)
+- 🚨 Bugs critiques connus
+- 📋 TODO prioritaire
+- 🔧 Commandes utiles
+- 🎯 Objectifs de la prochaine session
+
 ## Development Commands
 
 ```bash
