@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Patient {
+  id              String   @id @default(cuid())
+  nom             String
+  prenom          String
+  email           String?
+  telephone       String?
+  dateNaissance   DateTime
+  adresse         String?
+  numeroSecurite  String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  traitements     Traitement[]
+  
+  @@map("patients")
+}
+
+model Correspondant {
+  id        String   @id @default(cuid())
+  nom       String
+  specialite String
+  email     String?
+  telephone String?
+  adresse   String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("correspondants")
+}
+
+model Traitement {
+  id         String   @id @default(cuid())
+  patientId  String
+  type       String   // orthodontie, implants, couronnes, etc.
+  dents      String?  // numérotation des dents concernées
+  statut     String   @default("planifie") // planifie, en_cours, termine, suspendu
+  dateDebut  DateTime?
+  dateFin    DateTime?
+  cout       Float?
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  // Relations
+  patient    Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  etapes     EtapeTraitement[]
+  
+  @@map("traitements")
+}
+
+model EtapeTraitement {
+  id           String   @id @default(cuid())
+  traitementId String
+  titre        String
+  description  String?
+  date         DateTime
+  statut       String   @default("planifie") // planifie, termine, reporte
+  duree        Int?     // durée en minutes
+  cout         Float?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  traitement   Traitement @relation(fields: [traitementId], references: [id], onDelete: Cascade)
+  
+  @@map("etapes_traitement")
+}
