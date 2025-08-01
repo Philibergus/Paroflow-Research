@@ -1,0 +1,62 @@
+{
+  "project": "Paroflow - Dental Practice Management",
+  "version": "1.0",
+  "status": "active-development",
+  "last_session": "2025-08-01",
+  "
+": "ready-for-testing",
+  
+  "critical_issues": [
+    {
+      "issue": "Search functionality broken",
+      "description": "SQLite incompatible with mode: 'insensitive'",
+      "priority": "urgent",
+      "estimated_time": "30min",
+      "files_affected": ["app/api/*/route.ts"]
+    }
+  ],
+  
+  "active_todos": [
+    {
+      "task": "Fix search bug (SQLite mode insensitive)",
+      "priority": "critical",
+      "status": "pending"
+    },
+    {
+      "task": "Test new Todo and Statistics pages",
+      "priority": "high", 
+      "status": "pending"
+    }
+  ],
+  
+  "completed_recently": [
+    "Backend architecture complete (Next.js + Prisma + SQLite)",
+    "Frontend UI complete (React + shadcn/ui)",
+    "Added Todo and Statistics tabs",
+    "Cleaned dashboard (removed business metrics)",
+    "All CRUD operations working"
+  ],
+  
+  "next_priorities": [
+    "Fix search functionality",
+    "Test complete user workflow",
+    "Add intelligent command parsing",
+    "Improve error handling"
+  ],
+  
+  "working_features": [
+    "Patient management (CRUD)",
+    "Correspondant management (CRUD)", 
+    "Treatment tracking (CRUD)",
+    "Professional medical UI",
+    "French dental terminology",
+    "Database with realistic test data"
+  ],
+  
+  "dev_commands": {
+    "start_backend": "npm run dev:api",
+    "start_frontend": "npm run dev:frontend", 
+    "database_studio": "npm run db:studio",
+    "build_check": "npm run build"
+  }
+}
