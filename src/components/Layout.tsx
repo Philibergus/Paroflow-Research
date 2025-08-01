@@ -6,7 +6,9 @@ import {
   LayoutDashboard, 
   Menu,
   Search,
-  Bell
+  Bell,
+  CheckSquare,
+  BarChart3
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,7 +22,9 @@ const navigation = [
   { name: 'Tableau de bord', href: '/', icon: LayoutDashboard },
   { name: 'Patients', href: '/patients', icon: Users },
   { name: 'Correspondants', href: '/correspondants', icon: UserCheck },
+  { name: 'Tâches', href: '/todo', icon: CheckSquare },
   { name: 'Rapports', href: '/reports', icon: FileText },
+  { name: 'Statistiques', href: '/statistics', icon: BarChart3 },
 ]
 
 export default function Layout({ children }: LayoutProps) {

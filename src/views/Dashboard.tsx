@@ -14,7 +14,6 @@ import {
   Search,
   CommandIcon
 } from 'lucide-react'
-import { formatCurrency } from '@/lib/utils'
 import CommandBar from '@/components/CommandBar'
 
 export default function Dashboard() {
@@ -28,11 +27,6 @@ export default function Dashboard() {
   const totalPatients = patientsData?.pagination?.total || 0
   const totalCorrespondants = correspondantsData?.pagination?.total || 0
   const totalTraitements = traitementsData?.pagination?.total || 0
-  
-  // Calculate revenue from treatments
-  const totalRevenue = traitementsData?.data?.reduce((sum, treatment) => {
-    return sum + (treatment.cout || 0)
-  }, 0) || 0
 
   const recentTreatments = traitementsData?.data?.slice(0, 5) || []
 
@@ -60,14 +54,6 @@ export default function Dashboard() {
       icon: Calendar,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
-    },
-    {
-      title: 'Chiffre d\'affaires',
-      value: formatCurrency(totalRevenue),
-      description: 'Total des traitements',
-      icon: Activity,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
     },
   ]
 
@@ -151,9 +137,6 @@ export default function Dashboard() {
                       </p>
                     </div>
                     <div className="text-right">
-                      {treatment.cout && (
-                        <p className="font-medium">{formatCurrency(treatment.cout)}</p>
-                      )}
                       <p className="text-xs text-gray-500">
                         {treatment.dents && `Dents: ${treatment.dents}`}
                       </p>
