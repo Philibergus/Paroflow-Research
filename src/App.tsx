@@ -6,6 +6,7 @@ import Correspondants from './views/Correspondants'
 import Reports from './views/Reports'
 import Todo from './views/Todo'
 import Statistics from './views/Statistics'
+import RendezVous from './views/RendezVous'
 import { Toaster } from 'sonner'
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/patients" element={<Patients />} />
+          <Route path="/rendez-vous" element={<RendezVous />} />
           <Route path="/correspondants" element={<Correspondants />} />
           <Route path="/todo" element={<Todo />} />
           <Route path="/reports" element={<Reports />} />

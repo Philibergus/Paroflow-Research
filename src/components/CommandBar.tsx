@@ -15,7 +15,9 @@ import {
   Search, 
   Calendar,
   FileText,
-  Activity
+  Activity,
+  CheckSquare,
+  BarChart3
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -104,6 +106,28 @@ export default function CommandBar({ open, onOpenChange }: CommandBarProps) {
         onOpenChange(false)
       },
       keywords: ['dashboard', 'accueil', 'tableau', 'bord']
+    },
+    {
+      id: 'todo',
+      label: 'Tâches et Todos',
+      description: 'Gérer les tâches et pense-bêtes',
+      icon: CheckSquare,
+      action: () => {
+        navigate('/todo')
+        onOpenChange(false)
+      },
+      keywords: ['todo', 'tâches', 'rappel', 'pense-bête', 'notes']
+    },
+    {
+      id: 'statistics',
+      label: 'Statistiques équipe',
+      description: 'Tracker le temps et la productivité',
+      icon: BarChart3,
+      action: () => {
+        navigate('/statistics')
+        onOpenChange(false)
+      },
+      keywords: ['statistiques', 'temps', 'productivité', 'équipe', 'analytics']
     }
   ]
 
@@ -167,6 +191,32 @@ export default function CommandBar({ open, onOpenChange }: CommandBarProps) {
     // Reports patterns
     if (lower.match(/(rapport|traitement|statistique)/)) {
       return commands.find(c => c.id === 'reports')
+    }
+    
+    // Medical workflow patterns - Ce que vous vouliez !
+    if (lower.match(/(implant|pose|chirurgie|extraction|détartrage|soin).*(posé|fait|terminé|fini)/)) {
+      // Retourne une action spéciale pour traitement terminé
+      return {
+        id: 'treatment-completed',
+        label: 'Traitement terminé',
+        description: 'Enregistrer un traitement comme terminé et déclencher les actions automatiques',
+        icon: Activity,
+        action: () => {
+          // Ici on pourrait ouvrir un modal pour saisir les détails
+          alert('Fonctionnalité en développement : Workflow automatique post-traitement')
+          onOpenChange(false)
+        }
+      }
+    }
+    
+    // Todo/reminder patterns
+    if (lower.match(/(todo|tâche|rappel|note|pense.?bête)/)) {
+      return commands.find(c => c.id === 'todo')
+    }
+    
+    // Statistics patterns
+    if (lower.match(/(temps|statistique|productivité|équipe)/)) {
+      return commands.find(c => c.id === 'statistics')
     }
     
     return null

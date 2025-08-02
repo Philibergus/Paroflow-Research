@@ -21,13 +21,13 @@ export async function GET(request: NextRequest) {
       ...(patientId && { patientId }),
       ...(search && {
         OR: [
-          { type: { contains: search, mode: 'insensitive' as const } },
-          { dents: { contains: search, mode: 'insensitive' as const } },
-          { statut: { contains: search, mode: 'insensitive' as const } },
+          { type: { contains: search } },
+          { dents: { contains: search } },
+          { statut: { contains: search } },
           { patient: { 
             OR: [
-              { nom: { contains: search, mode: 'insensitive' as const } },
-              { prenom: { contains: search, mode: 'insensitive' as const } },
+              { nom: { contains: search } },
+              { prenom: { contains: search } },
             ]
           }},
         ],

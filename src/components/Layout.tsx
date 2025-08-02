@@ -8,7 +8,8 @@ import {
   Search,
   Bell,
   CheckSquare,
-  BarChart3
+  BarChart3,
+  Calendar
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,6 +22,7 @@ interface LayoutProps {
 const navigation = [
   { name: 'Tableau de bord', href: '/', icon: LayoutDashboard },
   { name: 'Patients', href: '/patients', icon: Users },
+  { name: 'Rendez-vous', href: '/rendez-vous', icon: Calendar },
   { name: 'Correspondants', href: '/correspondants', icon: UserCheck },
   { name: 'Tâches', href: '/todo', icon: CheckSquare },
   { name: 'Rapports', href: '/reports', icon: FileText },

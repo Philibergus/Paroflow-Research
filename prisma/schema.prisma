@@ -25,6 +25,7 @@ model Patient {
   
   // Relations
   traitements     Traitement[]
+  rendezVous      RendezVous[]
   
   @@map("patients")
 }
@@ -80,4 +81,24 @@ model EtapeTraitement {
   traitement   Traitement @relation(fields: [traitementId], references: [id], onDelete: Cascade)
   
   @@map("etapes_traitement")
+}
+
+model RendezVous {
+  id           String   @id @default(cuid())
+  patientId    String
+  titre        String
+  description  String?
+  dateHeure    DateTime
+  duree        Int      @default(30) // durée en minutes
+  statut       String   @default("planifie") // planifie, confirme, annule, termine
+  type         String   @default("consultation") // consultation, chirurgie, controle, urgence
+  salle        String?  // salle de consultation
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  patient      Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  @@map("rendez_vous")
 }
