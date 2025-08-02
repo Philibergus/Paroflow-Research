@@ -7,6 +7,7 @@ import Reports from './views/Reports'
 import Todo from './views/Todo'
 import Statistics from './views/Statistics'
 import RendezVous from './views/RendezVous'
+import DentalManagement from './views/DentalManagement'
 import { Toaster } from 'sonner'
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/dental" element={<DentalManagement />} />
           <Route path="/patients" element={<Patients />} />
           <Route path="/rendez-vous" element={<RendezVous />} />
           <Route path="/correspondants" element={<Correspondants />} />

@@ -6,6 +6,10 @@ import type {
   CreateTraitementInput,
   UpdateTraitementInput,
   CreateEtapeTraitementInput,
+  CreateCharteDentaireInput,
+  UpdateCharteDentaireInput,
+  CreateFileAttenteInput,
+  UpdateFileAttenteInput,
   ApiResponse,
   PaginatedResponse 
 } from '../../app/types'
@@ -66,6 +70,37 @@ export interface EtapeTraitement {
   notes?: string
   createdAt: string
   updatedAt: string
+}
+
+export interface CharteDentaire {
+  id: string
+  patientId: string
+  traitementId?: string
+  numeroDent: number
+  statut: 'present' | 'extracted' | 'implant' | 'crown' | 'filling' | 'missing'
+  etat?: 'healthy' | 'caries' | 'restoration' | 'inflammation' | 'infection'
+  notes?: string
+  couleur?: string
+  dateModification: string
+  createdAt: string
+  updatedAt: string
+  patient?: Patient
+  traitement?: Traitement
+}
+
+export interface FileAttente {
+  id: string
+  patientId: string
+  type: 'periodontal' | 'implant' | 'followup' | 'emergency'
+  priorite: number
+  statut: 'waiting' | 'in_progress' | 'completed' | 'cancelled'
+  notes?: string
+  dateAjout: string
+  dateDebut?: string
+  dateFin?: string
+  createdAt: string
+  updatedAt: string
+  patient?: Patient
 }
 
 class ApiClient {
@@ -232,6 +267,96 @@ class ApiClient {
     return this.request<ApiResponse<EtapeTraitement>>(`/traitements/${data.traitementId}/etapes`, {
       method: 'POST',
       body: JSON.stringify(data),
+    })
+  }
+
+  // Dental Charts
+  async getDentalCharts(params?: {
+    page?: number
+    limit?: number
+    patientId?: string
+    traitementId?: string
+  }): Promise<PaginatedResponse<CharteDentaire>> {
+    const searchParams = new URLSearchParams()
+    if (params?.page) searchParams.append('page', params.page.toString())
+    if (params?.limit) searchParams.append('limit', params.limit.toString())
+    if (params?.patientId) searchParams.append('patientId', params.patientId)
+    if (params?.traitementId) searchParams.append('traitementId', params.traitementId)
+    
+    const query = searchParams.toString()
+    return this.request<PaginatedResponse<CharteDentaire>>(`/chartes-dentaires${query ? `?${query}` : ''}`)
+  }
+
+  async getDentalChart(id: string): Promise<ApiResponse<CharteDentaire>> {
+    return this.request<ApiResponse<CharteDentaire>>(`/chartes-dentaires/${id}`)
+  }
+
+  async createDentalChart(data: CreateCharteDentaireInput): Promise<ApiResponse<CharteDentaire>> {
+    return this.request<ApiResponse<CharteDentaire>>('/chartes-dentaires', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async updateDentalChart(id: string, data: UpdateCharteDentaireInput): Promise<ApiResponse<CharteDentaire>> {
+    return this.request<ApiResponse<CharteDentaire>>(`/chartes-dentaires/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async deleteDentalChart(id: string): Promise<ApiResponse<null>> {
+    return this.request<ApiResponse<null>>(`/chartes-dentaires/${id}`, {
+      method: 'DELETE',
+    })
+  }
+
+  // Queue Management
+  async getQueue(params?: {
+    page?: number
+    limit?: number
+    search?: string
+    type?: string
+    statut?: string
+    priorite?: number
+    sortBy?: string
+    sortOrder?: 'asc' | 'desc'
+  }): Promise<PaginatedResponse<FileAttente>> {
+    const searchParams = new URLSearchParams()
+    if (params?.page) searchParams.append('page', params.page.toString())
+    if (params?.limit) searchParams.append('limit', params.limit.toString())
+    if (params?.search) searchParams.append('search', params.search)
+    if (params?.type) searchParams.append('type', params.type)
+    if (params?.statut) searchParams.append('statut', params.statut)
+    if (params?.priorite) searchParams.append('priorite', params.priorite.toString())
+    if (params?.sortBy) searchParams.append('sortBy', params.sortBy)
+    if (params?.sortOrder) searchParams.append('sortOrder', params.sortOrder)
+    
+    const query = searchParams.toString()
+    return this.request<PaginatedResponse<FileAttente>>(`/file-attente${query ? `?${query}` : ''}`)
+  }
+
+  async getQueueItem(id: string): Promise<ApiResponse<FileAttente>> {
+    return this.request<ApiResponse<FileAttente>>(`/file-attente/${id}`)
+  }
+
+  async addToQueue(data: CreateFileAttenteInput): Promise<ApiResponse<FileAttente>> {
+    return this.request<ApiResponse<FileAttente>>('/file-attente', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async updateQueueItem(id: string, data: UpdateFileAttenteInput): Promise<ApiResponse<FileAttente>> {
+    return this.request<ApiResponse<FileAttente>>(`/file-attente/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async removeFromQueue(id: string): Promise<ApiResponse<null>> {
+    return this.request<ApiResponse<null>>(`/file-attente/${id}`, {
+      method: 'DELETE',
     })
   }
 }

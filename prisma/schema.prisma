@@ -26,6 +26,9 @@ model Patient {
   // Relations
   traitements     Traitement[]
   rendezVous      RendezVous[]
+  chartesDentaires CharteDentaire[]
+  documentsPatient DocumentPatient[]
+  filesAttente    FileAttente[]
   
   @@map("patients")
 }
@@ -45,21 +48,24 @@ model Correspondant {
 }
 
 model Traitement {
-  id         String   @id @default(cuid())
-  patientId  String
-  type       String   // orthodontie, implants, couronnes, etc.
-  dents      String?  // numérotation des dents concernées
-  statut     String   @default("planifie") // planifie, en_cours, termine, suspendu
-  dateDebut  DateTime?
-  dateFin    DateTime?
-  cout       Float?
-  notes      String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id                String   @id @default(cuid())
+  patientId         String
+  type              String   // orthodontie, implants, couronnes, etc.
+  dents             String?  // numérotation des dents concernées
+  statut            String   @default("planifie") // planifie, en_cours, termine, suspendu
+  dateDebut         DateTime?
+  dateFin           DateTime?
+  cout              Float?
+  notes             String?
+  scenariotype      String?  // Type de scénario clinique (wisdom_extraction, periodontal_nonsurgical, etc.)
+  scenarioEtapeCourante String? // ID de l'étape courante dans le scénario
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
   
   // Relations
-  patient    Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  etapes     EtapeTraitement[]
+  patient           Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  etapes            EtapeTraitement[]
+  chartesDentaires  CharteDentaire[]
   
   @@map("traitements")
 }
@@ -101,4 +107,83 @@ model RendezVous {
   patient      Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
   
   @@map("rendez_vous")
+}
+
+// Dental Chart Model - tracks dental status for each tooth
+model CharteDentaire {
+  id           String   @id @default(cuid())
+  patientId    String
+  traitementId String?
+  numeroDent   Int      // Tooth number (18-28, 38-48, etc.)
+  statut       String   // present, extracted, implant, crown, filling, etc.
+  etat         String?  // healthy, caries, restoration, etc.
+  notes        String?
+  couleur      String?  // Color code for visualization
+  dateModification DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  patient      Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  traitement   Traitement? @relation(fields: [traitementId], references: [id], onDelete: SetNull)
+  
+  @@unique([patientId, numeroDent])
+  @@map("chartes_dentaires")
+}
+
+// Clinical Scenario Templates
+model ScenarioType {
+  id          String   @id @default(cuid())
+  nom         String   @unique // wisdom_extraction, periodontal_nonsurgical, etc.
+  titre       String   // Human-readable title
+  description String?
+  etapesTemplate Json  // JSON defining the steps and branching logic
+  dureeEstimee Int?    // Estimated duration in days
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("scenario_types")
+}
+
+// Patient Queue Management
+model FileAttente {
+  id          String   @id @default(cuid())
+  patientId   String
+  type        String   // periodontal, implant, followup, emergency
+  priorite    Int      @default(1) // 1=low, 2=medium, 3=high, 4=urgent
+  statut      String   @default("waiting") // waiting, in_progress, completed, cancelled
+  notes       String?
+  dateAjout   DateTime @default(now())
+  dateDebut   DateTime?
+  dateFin     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  patient     Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  @@map("files_attente")
+}
+
+// Document Management
+model DocumentPatient {
+  id          String   @id @default(cuid())
+  patientId   String
+  type        String   // report, estimate, xray, photo, correspondence
+  titre       String
+  description String?
+  cheminFichier String // File path or URL
+  mimeType    String?
+  tailleFichier Int?   // File size in bytes
+  dateDocument DateTime? // Date the document was created/taken
+  tags        String?  // Comma-separated tags for search
+  isVisible   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  patient     Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  @@map("documents_patients")
 }

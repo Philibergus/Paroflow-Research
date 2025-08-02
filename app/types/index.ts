@@ -58,6 +58,88 @@ export const updateTraitementSchema = createTraitementSchema.partial()
 export type CreateTraitementInput = z.infer<typeof createTraitementSchema>
 export type UpdateTraitementInput = z.infer<typeof updateTraitementSchema>
 
+// Dental Chart schemas
+export const dentStatuts = ['present', 'extracted', 'implant', 'crown', 'filling', 'missing'] as const
+export const dentEtats = ['healthy', 'caries', 'restoration', 'inflammation', 'infection'] as const
+
+export const createCharteDentaireSchema = z.object({
+  patientId: z.string().cuid('ID patient invalide'),
+  traitementId: z.string().cuid('ID traitement invalide').optional(),
+  numeroDent: z.number().int().min(1).max(48, 'Numéro de dent invalide'),
+  statut: z.enum(dentStatuts),
+  etat: z.enum(dentEtats).optional(),
+  notes: z.string().optional(),
+  couleur: z.string().optional(),
+})
+
+export const updateCharteDentaireSchema = createCharteDentaireSchema.partial()
+
+export type CreateCharteDentaireInput = z.infer<typeof createCharteDentaireSchema>
+export type UpdateCharteDentaireInput = z.infer<typeof updateCharteDentaireSchema>
+
+// Scenario Type schemas
+export const scenarioNoms = [
+  'wisdom_extraction',
+  'periodontal_nonsurgical', 
+  'periodontal_surgical',
+  'periimplantitis_treatment',
+  'standard_implant'
+] as const
+
+export const createScenarioTypeSchema = z.object({
+  nom: z.enum(scenarioNoms),
+  titre: z.string().min(1, 'Le titre est requis'),
+  description: z.string().optional(),
+  etapesTemplate: z.record(z.any()), // JSON object
+  dureeEstimee: z.number().int().positive('La durée doit être positive').optional(),
+  isActive: z.boolean().default(true),
+})
+
+export const updateScenarioTypeSchema = createScenarioTypeSchema.partial()
+
+export type CreateScenarioTypeInput = z.infer<typeof createScenarioTypeSchema>
+export type UpdateScenarioTypeInput = z.infer<typeof updateScenarioTypeSchema>
+
+// File Attente schemas
+export const fileAttenteTypes = ['periodontal', 'implant', 'followup', 'emergency'] as const
+export const fileAttenteStatuts = ['waiting', 'in_progress', 'completed', 'cancelled'] as const
+
+export const createFileAttenteSchema = z.object({
+  patientId: z.string().cuid('ID patient invalide'),
+  type: z.enum(fileAttenteTypes),
+  priorite: z.number().int().min(1).max(4, 'Priorité doit être entre 1 et 4').default(1),
+  statut: z.enum(fileAttenteStatuts).default('waiting'),
+  notes: z.string().optional(),
+})
+
+export const updateFileAttenteSchema = createFileAttenteSchema.partial()
+
+export type CreateFileAttenteInput = z.infer<typeof createFileAttenteSchema>
+export type UpdateFileAttenteInput = z.infer<typeof updateFileAttenteSchema>
+
+// Document Patient schemas
+export const documentTypes = ['report', 'estimate', 'xray', 'photo', 'correspondence'] as const
+
+export const createDocumentPatientSchema = z.object({
+  patientId: z.string().cuid('ID patient invalide'),
+  type: z.enum(documentTypes),
+  titre: z.string().min(1, 'Le titre est requis'),
+  description: z.string().optional(),
+  cheminFichier: z.string().min(1, 'Le chemin du fichier est requis'),
+  mimeType: z.string().optional(),
+  tailleFichier: z.number().int().positive().optional(),
+  dateDocument: z.string().or(z.date()).transform((val) => 
+    typeof val === 'string' ? new Date(val) : val
+  ).optional(),
+  tags: z.string().optional(),
+  isVisible: z.boolean().default(true),
+})
+
+export const updateDocumentPatientSchema = createDocumentPatientSchema.partial()
+
+export type CreateDocumentPatientInput = z.infer<typeof createDocumentPatientSchema>
+export type UpdateDocumentPatientInput = z.infer<typeof updateDocumentPatientSchema>
+
 // Etape Traitement schemas
 export const createEtapeTraitementSchema = z.object({
   traitementId: z.string().cuid('ID traitement invalide'),
