@@ -23,7 +23,7 @@ import {
   MapPin,
   Stethoscope
 } from 'lucide-react'
-import { formatDate } from '@/lib/utils'
+import { formatDate, getSpecialtyBadgeClasses } from '@/lib/utils'
 import { CorrespondantForm } from '@/components/common'
 import { Correspondant } from '@/lib/api'
 
@@ -69,17 +69,6 @@ export default function Correspondants() {
     setEditingCorrespondant(null)
   }
 
-  const getSpecialityColor = (specialite: string) => {
-    const colors: Record<string, string> = {
-      'orthodontie': 'bg-blue-100 text-blue-800',
-      'chirurgie': 'bg-red-100 text-red-800',
-      'parodontologie': 'bg-green-100 text-green-800',
-      'endodontie': 'bg-purple-100 text-purple-800',
-      'implantologie': 'bg-orange-100 text-orange-800',
-      'medecine generale': 'bg-gray-100 text-gray-800',
-    }
-    return colors[specialite.toLowerCase()] || 'bg-gray-100 text-gray-800'
-  }
 
   if (error) {
     return (
@@ -186,7 +175,7 @@ export default function Correspondants() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={getSpecialityColor(correspondant.specialite)}>
+                        <Badge className={getSpecialtyBadgeClasses(correspondant.specialite)}>
                           {correspondant.specialite}
                         </Badge>
                       </TableCell>

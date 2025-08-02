@@ -31,3 +31,40 @@ export function formatCurrency(amount: number): string {
     currency: 'EUR'
   }).format(amount)
 }
+
+/**
+ * Returns consistent Tailwind CSS classes for medical specialty badges
+ * Provides good contrast and accessibility for all specialties
+ */
+export function getSpecialtyBadgeClasses(specialite: string): string {
+  const normalizedSpecialty = specialite.toLowerCase().trim()
+  
+  const specialtyColors: Record<string, string> = {
+    // Dental specialties - Blue family
+    'orthodontie': 'bg-blue-100 text-blue-800 border-blue-200',
+    'parodontologie': 'bg-cyan-100 text-cyan-800 border-cyan-200',
+    'endodontie': 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    'implantologie': 'bg-sky-100 text-sky-800 border-sky-200',
+    
+    // Surgery specialties - Red family
+    'chirurgie orale': 'bg-red-100 text-red-800 border-red-200',
+    'chirurgie maxillo-faciale': 'bg-rose-100 text-rose-800 border-rose-200',
+    
+    // Medical specialties - Green family
+    'médecine générale': 'bg-green-100 text-green-800 border-green-200',
+    'cardiologie': 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    'rhumatologie': 'bg-teal-100 text-teal-800 border-teal-200',
+    
+    // ENT and other - Purple/Orange family
+    'orl': 'bg-purple-100 text-purple-800 border-purple-200',
+    'autre': 'bg-gray-100 text-gray-800 border-gray-200',
+    
+    // Fallback colors for variations
+    'chirurgie': 'bg-red-100 text-red-800 border-red-200',
+    'dentiste': 'bg-blue-100 text-blue-800 border-blue-200',
+    'médecin': 'bg-green-100 text-green-800 border-green-200',
+  }
+
+  // Return matched color or default
+  return specialtyColors[normalizedSpecialty] || 'bg-gray-100 text-gray-800 border-gray-200'
+}

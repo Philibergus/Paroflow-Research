@@ -12,8 +12,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Correspondant } from '@/lib/api'
 import type { CreateCorrespondantInput } from '../../../lib/shared-types'
+import { OCRUploadZone } from '@/components/common'
 
 interface CorrespondantFormProps {
   open: boolean
@@ -153,6 +155,23 @@ export default function CorrespondantForm({
     onOpenChange(false)
   }
 
+  const handleOCRDataExtracted = (extractedData: any, detectedType: 'patient' | 'correspondant' | 'commercial' | 'unknown') => {
+    // Auto-fill if it's detected as correspondant data or unknown (could be correspondant)
+    if (detectedType === 'correspondant' || detectedType === 'unknown') {
+      setFormData(prev => ({
+        ...prev,
+        ...(extractedData.nom && { nom: extractedData.nom }),
+        ...(extractedData.email && { email: extractedData.email }),
+        ...(extractedData.telephone && { telephone: extractedData.telephone }),
+        ...(extractedData.adresse && { adresse: extractedData.adresse }),
+        ...(extractedData.specialite && { specialite: extractedData.specialite }),
+      }))
+      
+      // Clear any related errors
+      setErrors({})
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -168,126 +187,151 @@ export default function CorrespondantForm({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="nom">Nom / Cabinet *</Label>
-              <Input
-                id="nom"
-                name="nom"
-                value={formData.nom}
-                onChange={handleChange}
-                placeholder="Dr. Martin ou Cabinet Dentaire ABC"
-                className={errors.nom ? 'border-red-500' : ''}
-                disabled={isLoading}
-              />
-              {errors.nom && (
-                <p className="text-sm text-red-600">{errors.nom}</p>
-              )}
-            </div>
+        <Tabs defaultValue="form" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="form">Formulaire</TabsTrigger>
+            <TabsTrigger value="ocr">OCR - Extraction</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="form" className="space-y-4 mt-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="nom">Nom / Cabinet *</Label>
+                  <Input
+                    id="nom"
+                    name="nom"
+                    value={formData.nom}
+                    onChange={handleChange}
+                    placeholder="Dr. Martin ou Cabinet Dentaire ABC"
+                    className={errors.nom ? 'border-red-500' : ''}
+                    disabled={isLoading}
+                  />
+                  {errors.nom && (
+                    <p className="text-sm text-red-600">{errors.nom}</p>
+                  )}
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="specialite">Spécialité *</Label>
-              <select
-                id="specialite"
-                name="specialite"
-                value={formData.specialite}
-                onChange={handleChange}
-                className={`flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 ${errors.specialite ? 'border-red-500' : ''}`}
-                disabled={isLoading}
-              >
-                <option value="">Sélectionnez une spécialité</option>
-                {specialites.map((spec) => (
-                  <option key={spec} value={spec}>
-                    {spec}
-                  </option>
-                ))}
-              </select>
-              {errors.specialite && (
-                <p className="text-sm text-red-600">{errors.specialite}</p>
-              )}
-            </div>
-          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="specialite">Spécialité *</Label>
+                  <select
+                    id="specialite"
+                    name="specialite"
+                    value={formData.specialite}
+                    onChange={handleChange}
+                    className={`flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 ${errors.specialite ? 'border-red-500' : ''}`}
+                    disabled={isLoading}
+                  >
+                    <option value="">Sélectionnez une spécialité</option>
+                    {specialites.map((spec) => (
+                      <option key={spec} value={spec}>
+                        {spec}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.specialite && (
+                    <p className="text-sm text-red-600">{errors.specialite}</p>
+                  )}
+                </div>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={errors.email ? 'border-red-500' : ''}
-                disabled={isLoading}
-              />
-              {errors.email && (
-                <p className="text-sm text-red-600">{errors.email}</p>
-              )}
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className={errors.email ? 'border-red-500' : ''}
+                    disabled={isLoading}
+                  />
+                  {errors.email && (
+                    <p className="text-sm text-red-600">{errors.email}</p>
+                  )}
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="telephone">Téléphone</Label>
-              <Input
-                id="telephone"
-                name="telephone"
-                type="tel"
-                value={formData.telephone}
-                onChange={handleChange}
-                disabled={isLoading}
-              />
-            </div>
-          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="telephone">Téléphone</Label>
+                  <Input
+                    id="telephone"
+                    name="telephone"
+                    type="tel"
+                    value={formData.telephone}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="adresse">Adresse du cabinet</Label>
-            <Input
-              id="adresse"
-              name="adresse"
-              value={formData.adresse}
-              onChange={handleChange}
-              placeholder="123 Rue de la Santé, 75014 Paris"
-              disabled={isLoading}
+              <div className="space-y-2">
+                <Label htmlFor="adresse">Adresse du cabinet</Label>
+                <Input
+                  id="adresse"
+                  name="adresse"
+                  value={formData.adresse}
+                  onChange={handleChange}
+                  placeholder="123 Rue de la Santé, 75014 Paris"
+                  disabled={isLoading}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea
+                  id="notes"
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleChange}
+                  placeholder="Informations sur la collaboration, spécialités particulières, horaires..."
+                  rows={3}
+                  disabled={isLoading}
+                />
+              </div>
+
+              <DialogFooter>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={handleClose}
+                  disabled={isLoading}
+                >
+                  Annuler
+                </Button>
+                <Button 
+                  type="submit"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      {isEditing ? 'Modification...' : 'Création...'}
+                    </>
+                  ) : (
+                    isEditing ? 'Modifier' : 'Créer'
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </TabsContent>
+          
+          <TabsContent value="ocr" className="mt-6">
+            <OCRUploadZone 
+              onDataExtracted={handleOCRDataExtracted}
+              className="mb-4"
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea
-              id="notes"
-              name="notes"
-              value={formData.notes}
-              onChange={handleChange}
-              placeholder="Informations sur la collaboration, spécialités particulières, horaires..."
-              rows={3}
-              disabled={isLoading}
-            />
-          </div>
-
-          <DialogFooter>
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={handleClose}
-              disabled={isLoading}
-            >
-              Annuler
-            </Button>
-            <Button 
-              type="submit"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  {isEditing ? 'Modification...' : 'Création...'}
-                </>
-              ) : (
-                isEditing ? 'Modifier' : 'Créer'
-              )}
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="text-sm text-gray-600 bg-green-50 p-3 rounded-lg">
+              <p className="font-medium mb-1">💡 Conseils pour l'extraction de correspondants :</p>
+              <ul className="list-disc list-inside space-y-1">
+                <li>Cartes de visite, signatures d'emails ou en-têtes de lettres</li>
+                <li>Le système détecte automatiquement les spécialités médicales</li>
+                <li>Les données extraites rempliront automatiquement le formulaire</li>
+                <li>Vérifiez et ajustez les informations dans l'onglet "Formulaire"</li>
+              </ul>
+            </div>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   )

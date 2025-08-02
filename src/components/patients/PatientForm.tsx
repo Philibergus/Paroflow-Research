@@ -12,8 +12,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Patient } from '@/lib/api'
 import type { CreatePatientInput } from '../../../lib/shared-types'
+import { OCRUploadZone } from '@/components/common'
 
 interface PatientFormProps {
   open: boolean
@@ -152,6 +154,25 @@ export default function PatientForm({
     onOpenChange(false)
   }
 
+  const handleOCRDataExtracted = (extractedData: any, detectedType: 'patient' | 'correspondant' | 'commercial' | 'unknown') => {
+    // Only auto-fill if it's detected as patient data or unknown (could be patient)
+    if (detectedType === 'patient' || detectedType === 'unknown') {
+      setFormData(prev => ({
+        ...prev,
+        ...(extractedData.nom && { nom: extractedData.nom }),
+        ...(extractedData.prenom && { prenom: extractedData.prenom }),
+        ...(extractedData.email && { email: extractedData.email }),
+        ...(extractedData.telephone && { telephone: extractedData.telephone }),
+        ...(extractedData.adresse && { adresse: extractedData.adresse }),
+        ...(extractedData.dateNaissance && { dateNaissance: extractedData.dateNaissance }),
+        ...(extractedData.numeroSecurite && { numeroSecurite: extractedData.numeroSecurite }),
+      }))
+      
+      // Clear any related errors
+      setErrors({})
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -167,147 +188,172 @@ export default function PatientForm({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="prenom">Prénom *</Label>
-              <Input
-                id="prenom"
-                name="prenom"
-                value={formData.prenom}
-                onChange={handleChange}
-                className={errors.prenom ? 'border-red-500' : ''}
-                disabled={isLoading}
-              />
-              {errors.prenom && (
-                <p className="text-sm text-red-600">{errors.prenom}</p>
-              )}
-            </div>
+        <Tabs defaultValue="form" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="form">Formulaire</TabsTrigger>
+            <TabsTrigger value="ocr">OCR - Extraction</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="form" className="space-y-4 mt-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="prenom">Prénom *</Label>
+                  <Input
+                    id="prenom"
+                    name="prenom"
+                    value={formData.prenom}
+                    onChange={handleChange}
+                    className={errors.prenom ? 'border-red-500' : ''}
+                    disabled={isLoading}
+                  />
+                  {errors.prenom && (
+                    <p className="text-sm text-red-600">{errors.prenom}</p>
+                  )}
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="nom">Nom *</Label>
-              <Input
-                id="nom"
-                name="nom"
-                value={formData.nom}
-                onChange={handleChange}
-                className={errors.nom ? 'border-red-500' : ''}
-                disabled={isLoading}
-              />
-              {errors.nom && (
-                <p className="text-sm text-red-600">{errors.nom}</p>
-              )}
-            </div>
-          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="nom">Nom *</Label>
+                  <Input
+                    id="nom"
+                    name="nom"
+                    value={formData.nom}
+                    onChange={handleChange}
+                    className={errors.nom ? 'border-red-500' : ''}
+                    disabled={isLoading}
+                  />
+                  {errors.nom && (
+                    <p className="text-sm text-red-600">{errors.nom}</p>
+                  )}
+                </div>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={errors.email ? 'border-red-500' : ''}
-                disabled={isLoading}
-              />
-              {errors.email && (
-                <p className="text-sm text-red-600">{errors.email}</p>
-              )}
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className={errors.email ? 'border-red-500' : ''}
+                    disabled={isLoading}
+                  />
+                  {errors.email && (
+                    <p className="text-sm text-red-600">{errors.email}</p>
+                  )}
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="telephone">Téléphone</Label>
-              <Input
-                id="telephone"
-                name="telephone"
-                type="tel"
-                value={formData.telephone}
-                onChange={handleChange}
-                disabled={isLoading}
-              />
-            </div>
-          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="telephone">Téléphone</Label>
+                  <Input
+                    id="telephone"
+                    name="telephone"
+                    type="tel"
+                    value={formData.telephone}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="dateNaissance">Date de naissance *</Label>
-              <Input
-                id="dateNaissance"
-                name="dateNaissance"
-                type="date"
-                value={formData.dateNaissance}
-                onChange={handleChange}
-                className={errors.dateNaissance ? 'border-red-500' : ''}
-                disabled={isLoading}
-              />
-              {errors.dateNaissance && (
-                <p className="text-sm text-red-600">{errors.dateNaissance}</p>
-              )}
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="dateNaissance">Date de naissance *</Label>
+                  <Input
+                    id="dateNaissance"
+                    name="dateNaissance"
+                    type="date"
+                    value={formData.dateNaissance}
+                    onChange={handleChange}
+                    className={errors.dateNaissance ? 'border-red-500' : ''}
+                    disabled={isLoading}
+                  />
+                  {errors.dateNaissance && (
+                    <p className="text-sm text-red-600">{errors.dateNaissance}</p>
+                  )}
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="numeroSecurite">Numéro de sécurité sociale</Label>
-              <Input
-                id="numeroSecurite"
-                name="numeroSecurite"
-                value={formData.numeroSecurite}
-                onChange={handleChange}
-                placeholder="1 23 45 67 890 123 45"
-                disabled={isLoading}
-              />
-            </div>
-          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="numeroSecurite">Numéro de sécurité sociale</Label>
+                  <Input
+                    id="numeroSecurite"
+                    name="numeroSecurite"
+                    value={formData.numeroSecurite}
+                    onChange={handleChange}
+                    placeholder="1 23 45 67 890 123 45"
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="adresse">Adresse</Label>
-            <Input
-              id="adresse"
-              name="adresse"
-              value={formData.adresse}
-              onChange={handleChange}
-              disabled={isLoading}
+              <div className="space-y-2">
+                <Label htmlFor="adresse">Adresse</Label>
+                <Input
+                  id="adresse"
+                  name="adresse"
+                  value={formData.adresse}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea
+                  id="notes"
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleChange}
+                  placeholder="Notes médicales, allergies, informations importantes..."
+                  rows={3}
+                  disabled={isLoading}
+                />
+              </div>
+
+              <DialogFooter>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={handleClose}
+                  disabled={isLoading}
+                >
+                  Annuler
+                </Button>
+                <Button 
+                  type="submit"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      {isEditing ? 'Modification...' : 'Création...'}
+                    </>
+                  ) : (
+                    isEditing ? 'Modifier' : 'Créer'
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </TabsContent>
+          
+          <TabsContent value="ocr" className="mt-6">
+            <OCRUploadZone 
+              onDataExtracted={handleOCRDataExtracted}
+              className="mb-4"
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea
-              id="notes"
-              name="notes"
-              value={formData.notes}
-              onChange={handleChange}
-              placeholder="Notes médicales, allergies, informations importantes..."
-              rows={3}
-              disabled={isLoading}
-            />
-          </div>
-
-          <DialogFooter>
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={handleClose}
-              disabled={isLoading}
-            >
-              Annuler
-            </Button>
-            <Button 
-              type="submit"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  {isEditing ? 'Modification...' : 'Création...'}
-                </>
-              ) : (
-                isEditing ? 'Modifier' : 'Créer'
-              )}
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
+              <p className="font-medium mb-1">💡 Conseils pour une meilleure extraction :</p>
+              <ul className="list-disc list-inside space-y-1">
+                <li>Utilisez des images claires et bien éclairées</li>
+                <li>Assurez-vous que le texte est lisible</li>
+                <li>Les données extraites rempliront automatiquement le formulaire</li>
+                <li>Vous pouvez modifier les données dans l'onglet "Formulaire"</li>
+              </ul>
+            </div>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   )
