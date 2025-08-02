@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     // Build where clause
-    const where: any = {}
+    const where: Record<string, unknown> = {}
     
     if (type) where.type = type
     if (statut) where.statut = statut
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     const total = await prisma.fileAttente.count({ where })
 
     // Build order by
-    const orderBy: any = {}
+    const orderBy: Record<string, unknown> = {}
     if (sortBy === 'priorite') {
       orderBy.priorite = sortOrder
     } else if (sortBy === 'dateAjout') {

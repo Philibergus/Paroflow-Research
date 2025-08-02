@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react'
-import { Upload, Image, FileText, Loader2, CheckCircle, AlertCircle, Copy, Trash2 } from 'lucide-react'
+import { Upload, Image, FileText, Loader2, CheckCircle, AlertCircle, Copy, Trash2, Sparkles, Wand2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -22,6 +22,9 @@ interface OCRResult {
     dateNaissance?: string
     numeroSecurite?: string
   }
+  correctedText?: string
+  aiClassification?: string
+  aiConfidence?: number
 }
 
 interface OCRUploadZoneProps {
@@ -37,6 +40,7 @@ export default function OCRUploadZone({
 }: OCRUploadZoneProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isAiProcessing, setIsAiProcessing] = useState(false)
   const [extractedText, setExtractedText] = useState('')
   const [ocrResult, setOcrResult] = useState<OCRResult | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -160,6 +164,73 @@ export default function OCRUploadZone({
     return 'unknown'
   }
 
+  // AI-powered text correction using Ollama
+  const correctTextWithAI = async (text: string): Promise<string | null> => {
+    try {
+      const response = await fetch('/api/ai/correct-ocr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        return data.correctedText
+      }
+      return null
+    } catch (error) {
+      console.error('Erreur correction IA:', error)
+      return null
+    }
+  }
+
+  // AI-powered document classification using Ollama
+  const classifyDocumentWithAI = async (text: string): Promise<{ classification: string, confidence: number } | null> => {
+    try {
+      const response = await fetch('/api/ai/classify-document', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        return {
+          classification: data.classification,
+          confidence: data.confidence || 0.8
+        }
+      }
+      return null
+    } catch (error) {
+      console.error('Erreur classification IA:', error)
+      return null
+    }
+  }
+
+  // Enhanced OCR with AI processing
+  const enhanceWithAI = async (result: OCRResult): Promise<OCRResult> => {
+    setIsAiProcessing(true)
+    try {
+      // Correct text with AI
+      const correctedText = await correctTextWithAI(result.text)
+      
+      // Classify document with AI
+      const aiClassification = await classifyDocumentWithAI(result.text)
+      
+      return {
+        ...result,
+        correctedText: correctedText || undefined,
+        aiClassification: aiClassification?.classification || undefined,
+        aiConfidence: aiClassification?.confidence || undefined
+      }
+    } catch (error) {
+      console.error('Erreur amélioration IA:', error)
+      return result
+    } finally {
+      setIsAiProcessing(false)
+    }
+  }
+
   // Extract structured data from text
   const extractStructuredData = (text: string): OCRResult['extractedData'] => {
     const data: OCRResult['extractedData'] = {}
@@ -231,7 +302,7 @@ export default function OCRUploadZone({
       const detectedType = detectContentType(text)
       const extractedData = extractStructuredData(text)
       
-      const result: OCRResult = {
+      let result: OCRResult = {
         text: text.trim(),
         confidence,
         detectedType,
@@ -242,6 +313,22 @@ export default function OCRUploadZone({
       setOcrResult(result)
       onTextExtracted?.(text.trim())
       onDataExtracted(extractedData, detectedType)
+
+      // Enhance with AI in background
+      try {
+        const enhancedResult = await enhanceWithAI(result)
+        setOcrResult(enhancedResult)
+        
+        // If AI provided better classification, update the callback
+        if (enhancedResult.aiClassification && enhancedResult.aiClassification !== detectedType) {
+          const aiType = enhancedResult.aiClassification as OCRResult['detectedType']
+          if (['patient', 'correspondant', 'commercial'].includes(aiType)) {
+            onDataExtracted(extractedData, aiType)
+          }
+        }
+      } catch (error) {
+        console.error('Erreur amélioration IA:', error)
+      }
       
     } catch (err) {
       console.error('OCR Error:', err)
@@ -376,11 +463,39 @@ export default function OCRUploadZone({
                   <Badge className={getTypeColor(ocrResult.detectedType)}>
                     {getTypeLabel(ocrResult.detectedType)}
                   </Badge>
+                  {ocrResult.aiClassification && (
+                    <Badge variant="outline" className="border-purple-300 text-purple-700">
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      IA: {ocrResult.aiClassification}
+                    </Badge>
+                  )}
                   <span className="text-sm text-gray-500">
                     Confiance : {Math.round(ocrResult.confidence)}%
                   </span>
+                  {ocrResult.aiConfidence && (
+                    <span className="text-sm text-purple-600">
+                      IA: {Math.round(ocrResult.aiConfidence * 100)}%
+                    </span>
+                  )}
+                  {isAiProcessing && (
+                    <div className="flex items-center space-x-1 text-purple-600">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span className="text-sm">Amélioration IA...</span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex space-x-2">
+                  {ocrResult.correctedText && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setExtractedText(ocrResult.correctedText!)}
+                      className="flex items-center space-x-1 border-purple-300 text-purple-700 hover:bg-purple-50"
+                    >
+                      <Wand2 className="h-4 w-4" />
+                      <span>Utiliser correction IA</span>
+                    </Button>
+                  )}
                   <Button
                     variant="outline"
                     size="sm"

@@ -36,6 +36,10 @@ const navigation = [
   { name: 'Statistiques', href: '/statistics', icon: BarChart3 },
 ]
 
+const settingsNavigation = [
+  { name: 'Paramètres', href: '/settings', icon: Command },
+]
+
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
   const [showCommandBar, setShowCommandBar] = useState(false)
@@ -61,7 +65,7 @@ export default function Layout({ children }: LayoutProps) {
           <h1 className="text-xl font-bold text-blue-600">Paroflow</h1>
         </div>
         
-        <nav className="mt-6">
+        <nav className="mt-6 flex-1 flex flex-col">
           <div className="space-y-1 px-3">
             {navigation.map((item) => {
               const Icon = item.icon
@@ -83,6 +87,32 @@ export default function Layout({ children }: LayoutProps) {
                 </Link>
               )
             })}
+          </div>
+          
+          {/* Settings section at bottom */}
+          <div className="mt-auto px-3 pb-20">
+            <div className="border-t pt-4">
+              {settingsNavigation.map((item) => {
+                const Icon = item.icon
+                const isActive = location.pathname === item.href
+                
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={cn(
+                      'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                      isActive
+                        ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    )}
+                  >
+                    <Icon className="mr-3 h-5 w-5" />
+                    {item.name}
+                  </Link>
+                )
+              })}
+            </div>
           </div>
         </nav>
 

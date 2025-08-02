@@ -1,12 +1,12 @@
 {
-  "timestamp": "2025-08-02T10:21:30+02:00",
+  "timestamp": "2025-08-02T21:37:30+02:00",
   "monitoring_type": "simple_curl",
   "status": {
-    "frontend": "OK",
+    "frontend": "ERROR",
     "backend": "OK",
-    "html_title": "OK",
-    "html_root": "OK",
-    "routes": " /:OK /dental:OK /patients:OK /correspondants:OK"
+    "html_title": "ERROR",
+    "html_root": "ERROR",
+    "routes": " /:ERROR /dental:ERROR /patients:ERROR /correspondants:ERROR"
   },
   "urls_tested": [
     "http://localhost:8080",
@@ -16,9 +16,9 @@
     "http://localhost:8080/correspondants"
   ],
   "summary": {
-    "frontend_accessible": true,
+    "frontend_accessible": false,
     "backend_accessible": true,
-    "html_valid": true,
-    "all_routes_ok": true
+    "html_valid": false,
+    "all_routes_ok": false
   }
 }

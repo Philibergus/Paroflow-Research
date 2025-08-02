@@ -76,7 +76,7 @@ export async function PUT(
     }
 
     // Handle status changes with automatic timestamps
-    const updateData: any = { ...validatedData }
+    const updateData: Record<string, unknown> = { ...validatedData }
     
     if (validatedData.statut) {
       if (validatedData.statut === 'in_progress' && existing.statut === 'waiting') {

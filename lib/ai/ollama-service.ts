@@ -41,7 +41,15 @@ export class OllamaService {
     }
     
     this.ollama = new Ollama({ host: this.config.host })
-    this.checkAvailability()
+    // Initialize availability check (async)
+    this.initializeAvailability()
+  }
+
+  /**
+   * Initialize availability check asynchronously
+   */
+  private async initializeAvailability(): Promise<void> {
+    await this.checkAvailability()
   }
 
   /**
@@ -64,6 +72,16 @@ export class OllamaService {
   }
 
   /**
+   * Ensure Ollama is available before making requests
+   */
+  async ensureAvailable(): Promise<boolean> {
+    if (!this.isAvailable) {
+      await this.checkAvailability()
+    }
+    return this.isAvailable
+  }
+
+  /**
    * Génère une réponse avec le modèle approprié
    */
   async generate(
@@ -75,7 +93,7 @@ export class OllamaService {
       systemPrompt?: string
     }
   ): Promise<OllamaResponse | null> {
-    if (!this.isAvailable) {
+    if (!(await this.ensureAvailable())) {
       console.warn('Ollama non disponible')
       return null
     }

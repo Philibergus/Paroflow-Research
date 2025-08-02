@@ -1,18 +1,18 @@
 === RAPPORT MONITORING PAROFLOW ===
-Timestamp: 2025-08-02T10:21:30+02:00
+Timestamp: 2025-08-02T21:37:30+02:00
 
 Status Serveurs:
-- Frontend (8080): OK
+- Frontend (8080): ERROR
 - Backend (3001): OK
 
 Status HTML:
-- Titre Paroflow: OK
-- Div root: OK
+- Titre Paroflow: ERROR
+- Div root: ERROR
 
-Status Routes: /:OK /dental:OK /patients:OK /correspondants:OK
+Status Routes: /:ERROR /dental:ERROR /patients:ERROR /correspondants:ERROR
 
 Recommandations:
+- Démarrer le frontend: npm run dev:frontend
 
-
-
-
+- Vérifier le fichier index.html
+- Vérifier la configuration des routes React

@@ -84,10 +84,12 @@ implant: "Nobel 4.3×10 pos 26" → "[IMPLANT_TYPE_A]"
 
 ## 🎯 PAROFLOW - ÉTAT ACTUEL
 
-### Architecture Clean v2.0 ✅
+### Architecture IA Hybride v3.0 ✅
 - **Frontend** : React 18 + TypeScript + Vite (port 8080)
 - **Backend** : Next.js 15 + Prisma + SQLite (port 3001)
 - **UI** : shadcn/ui + Tailwind CSS médical
+- **IA Locale** : Ollama avec 3 modèles optimisés (11GB total)
+- **Email** : OAuth2 Gmail + Nodemailer intégré
 - **Types** : Unifiés dans `/lib/shared-types.ts`
 - **Structure** : Modulaire par domaine métier
 
@@ -97,14 +99,25 @@ implant: "Nobel 4.3×10 pos 26" → "[IMPLANT_TYPE_A]"
   - Timeline avec 5 scénariotypes cliniques
   - File d'attente parodontie/implantologie
   - Recherche intelligente patients
-- **Module Implants** (`/implants`) - **NOUVEAU** Base de données complète :
+- **Module Implants** (`/implants`) - Base de données complète :
   - **3 marques** : Nobel Biocare, Straumann, Biotech Dental
   - **110+ références implants** avec codes de commande exacts
-  - **47 composants prothétiques** (vis, piliers, accessoires)
+  - **56 composants prothétiques** (vis, piliers, Multi-Units)
   - **Gestion stock automatisée** avec alertes et traçabilité
   - **Sélecteur intelligent** : Marque → Système → Diamètre → Longueur
-- **Patients** (`/patients`) - CRUD complet avec recherche
-- **Correspondants** (`/correspondants`) - Réseau médical
+- **Module IA & OCR** (`/ai`) - **NOUVEAU** Intelligence artificielle locale :
+  - **OCR intelligent** avec correction automatique par IA
+  - **Classification documents** (ordonnance, compte-rendu, courrier)
+  - **Templates email** générés intelligemment
+  - **Tri automatique** to-do lists par priorité médicale
+- **Module Email** (`/email`) - **NOUVEAU** Communication intégrée :
+  - **OAuth2 Gmail** sécurisé (tokens chiffrés)
+  - **Templates automatiques** : Rappels, ordonnances, comptes-rendus
+  - **Envoi depuis l'app** avec variables patient dynamiques
+  - **Multi-comptes** avec gestion centralisée
+- **Patients** (`/patients`) - CRUD complet avec email intégré
+- **Correspondants** (`/correspondants`) - Réseau médical avec communication
+- **Paramètres** (`/settings`) - **NOUVEAU** Configuration email et IA
 - **Dashboard** (`/`) - Statistiques et actions rapides
 
 ## 🔧 COMMANDES IA LOCALE (OLLAMA)
@@ -132,6 +145,42 @@ ollama serve
 export OLLAMA_MAX_LOADED_MODELS=2      # Max 2 modèles simultanés
 export OLLAMA_NUM_PARALLEL=2           # 2 requêtes parallèles max
 export OLLAMA_HOST=127.0.0.1:11434    # Local uniquement
+```
+
+### Vérifier Installation
+```bash
+# Vérifier service Ollama actif
+ollama list
+
+# Tester un modèle
+ollama run llama3.2:3b-instruct-q6_K "Bonjour, comment ça va ?"
+
+# Logs Ollama (si problème)
+journalctl -u ollama -f
+```
+
+## 📧 SYSTÈME EMAIL INTÉGRÉ
+
+### Configuration Gmail OAuth2
+1. **Suivre le guide** : `/docs/GUIDE-EMAIL-GMAIL.md`
+2. **Google Cloud Console** : Créer projet + OAuth2 credentials
+3. **Variables d'environnement** : Copier `.env.example` → `.env`
+4. **Interface Paroflow** : Paramètres → Configuration Email
+
+### Fonctionnalités Email
+- **Envoi depuis patients** : Bouton email dans liste patients
+- **Templates automatiques** : Rappels RDV, ordonnances, comptes-rendus
+- **Variables dynamiques** : {patient_nom}, {rdv_date}, {praticien}
+- **Multi-comptes** : Gmail, Outlook (prochainement)
+- **Sécurité** : Tokens OAuth2 chiffrés en base
+
+### Test Email (sans envoi réel)
+```bash
+# Test configuration
+pnpm test:email
+
+# Logs email
+cat logs/email-debug.log
 ```
 
 ## 🧪 SYSTÈME DE TESTS ET DEBUG
@@ -250,17 +299,38 @@ Paroflow/
 - **EPCT Workflow** : Pour nouvelles fonctionnalités majeures
 - **TypeScript Pro** : Types avancés et patterns
 
+## 🎯 NOUVELLES FONCTIONNALITÉS DISPONIBLES
+
+### ✅ IA Locale Ollama (Prêt à l'utilisation)
+- **OCR intelligent** : Upload image → Correction automatique des erreurs
+- **Classification auto** : Documents triés par type (patient/correspondant/commercial)
+- **Templates IA** : Emails personnalisés générés intelligemment
+- **Tri automatique** : To-do lists organisées par priorité médicale
+- **Coût** : 0€ (tout en local, données sécurisées)
+
+### ✅ Système Email Gmail (Prêt après config)
+- **OAuth2 sécurisé** : Configuration simple via guide utilisateur
+- **Envoi depuis l'app** : Boutons email dans liste patients
+- **Templates prêts** : Rappels RDV, ordonnances, comptes-rendus
+- **Variables dynamiques** : Personnalisation automatique patient
+- **Multi-comptes** : Gestion centralisée de plusieurs emails
+
+### 📝 Configuration Nécessaire
+1. **Gmail OAuth2** : Suivre `/docs/GUIDE-EMAIL-GMAIL.md` (5 min)
+2. **Variables env** : Copier `.env.example` → `.env`
+3. **Test IA** : Tester OCR upload dans interface
+
 ## 🎯 OBJECTIFS PROCHAINES SESSIONS
 
 ### Immédiat
-1. **Finaliser tests browser** : Brave/Chrome/Firefox
-2. **Scraping correspondants** : Auto-remplissage infos web
-3. **Corrections UX** : Retours utilisateur module dentaire
+1. **Tests utilisateur IA** : OCR + Classification sur vrais documents
+2. **Configuration email** : Gmail OAuth2 + premiers envois
+3. **Optimisations UX** : Retours sur nouveaux modules
 
 ### Court Terme
-1. **Migration PostgreSQL** : Recherche full-text native
-2. **Gestion documents** : Upload PDF, radios, images
-3. **Rapports intelligents** : Génération automatique IA
+1. **Dictée vocale** : Whisper local + parsing médical intelligent
+2. **Autres providers email** : Outlook, Yahoo, SMTP générique
+3. **IA avancée** : Recommandations implants contextuelles
 
 ### Moyen Terme
 1. **Application mobile** : Version tablet consultations
@@ -284,6 +354,14 @@ Paroflow/
 
 ---
 
-**Version** : Paroflow v2.0 - Architecture Clean et Système de Tests Robuste  
-**Status** : ✅ Opérationnel - Prêt pour développement modules avancés  
+**Version** : Paroflow v3.0 - IA Hybride + Email Intégré  
+**Status** : ✅ Production Ready - IA locale + Communication automatisée  
 **Dernière Update** : 2 août 2025
+
+## 🔗 LIENS RAPIDES
+
+- **Guide Email Gmail** : [/docs/GUIDE-EMAIL-GMAIL.md](/docs/GUIDE-EMAIL-GMAIL.md)
+- **Tests Ollama** : `ollama list` et `ollama run llama3.2:3b-instruct-q6_K`
+- **Interface Paramètres** : http://localhost:8080/settings
+- **OCR Intelligent** : Upload dans formulaires Patient/Correspondant
+- **Envoi Email** : Boutons dans liste patients (si email configuré)

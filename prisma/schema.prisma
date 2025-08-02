@@ -31,6 +31,7 @@ model Patient {
   filesAttente    FileAttente[]
   implantUtilises ImplantUtilise[]
   composantsUtilises ComposantUtilise[]
+  emailsRecus     EmailEnvoye[]
   
   @@map("patients")
 }
@@ -505,4 +506,112 @@ model ComposantUtilise {
   composant        ComposantProsthetique @relation(fields: [composantId], references: [id], onDelete: Restrict)
   
   @@map("composants_utilises")
+}
+
+// ============================================================================
+// CONFIGURATION EMAIL
+// ============================================================================
+
+// Configuration des comptes email pour l'envoi
+model ConfigurationEmail {
+  id                  String   @id @default(cuid())
+  nom                 String   // "Cabinet Principal", "Dr. Martin", etc.
+  email               String   @unique
+  provider            String   @default("gmail") // gmail, outlook, custom
+  
+  // Configuration OAuth2 (sécurisée)
+  clientId            String?
+  clientSecretHash    String?  // Hash du secret, jamais en clair
+  refreshToken        String?  // Token de rafraîchissement chiffré
+  accessToken         String?  // Token d'accès temporaire
+  tokenExpiry         DateTime?
+  
+  // Configuration SMTP alternative (si pas OAuth)
+  smtpHost            String?
+  smtpPort            Int?
+  smtpSecure          Boolean? @default(true)
+  smtpUsername        String?
+  smtpPasswordHash    String?  // Mot de passe chiffré
+  
+  // Paramètres d'envoi
+  signatureHtml       String?  // Signature HTML
+  isActive            Boolean  @default(true)
+  isDefault           Boolean  @default(false) // Compte par défaut
+  
+  // Limites d'envoi
+  limitParJour        Int?     @default(100)
+  limitParHeure       Int?     @default(20)
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  // Relations
+  emailsEnvoyes       EmailEnvoye[]
+  
+  @@map("configurations_email")
+}
+
+// Templates d'emails réutilisables
+model TemplateEmail {
+  id             String   @id @default(cuid())
+  nom            String   @unique // "rappel_rdv", "ordonnance", "compte_rendu"
+  titre          String   // "Rappel de rendez-vous"
+  objet          String   // "Rappel: RDV {{date}} à {{heure}}"
+  contenuHtml    String   // Template HTML avec variables {{}}
+  contenuTexte   String?  // Version texte
+  variables      String   // JSON des variables disponibles
+  
+  // Catégorisation
+  categorie      String   // "rappel", "medical", "administratif"
+  description    String?
+  
+  isActive       Boolean  @default(true)
+  isSysteme      Boolean  @default(false) // Template système (non supprimable)
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  // Relations
+  emailsEnvoyes  EmailEnvoye[]
+  
+  @@map("templates_email")
+}
+
+// Historique des emails envoyés
+model EmailEnvoye {
+  id                    String   @id @default(cuid())
+  configurationEmailId  String
+  templateEmailId       String?
+  patientId             String?  // Si email lié à un patient
+  
+  // Contenu de l'email
+  destinataire          String   // Email du destinataire
+  objet                 String
+  contenuHtml          String?
+  contenuTexte         String?
+  
+  // Métadonnées d'envoi
+  statut               String   @default("pending") // pending, sent, failed, bounced
+  dateEnvoi            DateTime?
+  dateOuverture        DateTime?
+  dateClic             DateTime?
+  messageErreur        String?
+  
+  // Informations techniques
+  messageId            String?  // ID du message email
+  providerId           String?  // ID chez le provider (Gmail, etc.)
+  
+  // Contexte
+  typeEnvoi            String   // "manuel", "automatique", "rappel"
+  declencheur          String?  // Ce qui a déclenché l'envoi
+  
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  
+  // Relations
+  configurationEmail   ConfigurationEmail @relation(fields: [configurationEmailId], references: [id], onDelete: Cascade)
+  templateEmail        TemplateEmail? @relation(fields: [templateEmailId], references: [id], onDelete: SetNull)
+  patient              Patient? @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  
+  @@map("emails_envoyes")
 }

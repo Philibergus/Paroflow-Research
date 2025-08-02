@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { PatientForm } from '@/components/patients'
+import { EmailSender } from '@/components/common'
 import { Patient } from '@/lib/api'
 
 export default function Patients() {
@@ -31,6 +32,8 @@ export default function Patients() {
   const [page, setPage] = useState(1)
   const [showForm, setShowForm] = useState(false)
   const [editingPatient, setEditingPatient] = useState<Patient | null>(null)
+  const [showEmailSender, setShowEmailSender] = useState(false)
+  const [emailingPatient, setEmailingPatient] = useState<Patient | null>(null)
 
   const { 
     data: patientsData, 
@@ -66,6 +69,20 @@ export default function Patients() {
   const handleCloseForm = () => {
     setShowForm(false)
     setEditingPatient(null)
+  }
+
+  const handleSendEmail = (patient: Patient) => {
+    if (!patient.email) {
+      alert('Ce patient n\'a pas d\'adresse email renseignée.')
+      return
+    }
+    setEmailingPatient(patient)
+    setShowEmailSender(true)
+  }
+
+  const handleCloseEmailSender = () => {
+    setShowEmailSender(false)
+    setEmailingPatient(null)
   }
 
   if (error) {
@@ -207,10 +224,22 @@ export default function Patients() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end space-x-2">
+                          {patient.email && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleSendEmail(patient)}
+                              title="Envoyer un email"
+                              className="text-blue-600 hover:text-blue-700"
+                            >
+                              <Mail className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleEdit(patient)}
+                            title="Modifier"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -218,6 +247,7 @@ export default function Patients() {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDelete(patient.id)}
+                            title="Supprimer"
                             className="text-red-600 hover:text-red-700"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -283,6 +313,22 @@ export default function Patients() {
         onOpenChange={setShowForm}
         patient={editingPatient}
         onSuccess={handleCloseForm}
+      />
+
+      {/* Email Sender Dialog */}
+      <EmailSender
+        open={showEmailSender}
+        onOpenChange={setShowEmailSender}
+        recipientEmail={emailingPatient?.email || ''}
+        recipientName={emailingPatient ? `${emailingPatient.prenom} ${emailingPatient.nom}` : ''}
+        patientId={emailingPatient?.id}
+        defaultVariables={{
+          patient: emailingPatient ? `${emailingPatient.prenom} ${emailingPatient.nom}` : '',
+          date: new Date().toLocaleDateString('fr-FR'),
+          heure: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+          praticien: 'Dr. Martin'
+        }}
+        onSuccess={handleCloseEmailSender}
       />
     </div>
   )

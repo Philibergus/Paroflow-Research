@@ -9,6 +9,7 @@ import Reports from './views/Reports'
 import Todo from './views/Todo'
 import Statistics from './views/Statistics'
 import RendezVous from './views/RendezVous'
+import Settings from './views/Settings'
 import { Toaster } from 'sonner'
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           <Route path="/todo" element={<Todo />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/statistics" element={<Statistics />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </Layout>
       <Toaster position="top-right" />
