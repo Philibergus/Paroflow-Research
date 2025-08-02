@@ -1,228 +1,165 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Ce fichier guide Claude Code pour travailler efficacement sur le projet Paroflow.
 
 ## 🚨 PREMIÈRE CHOSE À FAIRE APRÈS /init
 
-**IMPORTANT** : Lire immédiatement le fichier `GUIDE-REPRISE.md` pour comprendre l'état actuel du projet et reprendre le développement efficacement.
+**IMPORTANT** : Lire immédiatement le fichier `GUIDE-REPRISE.md` pour comprendre l'état actuel du projet.
 
+```bash
+# Commande prioritaire à chaque session :
+Read le fichier GUIDE-REPRISE.md
 ```
-Commande: Read le fichier GUIDE-REPRISE.md dès le début de chaque session
-```
-
-Le guide contient :
-- ⚡ Démarrage rapide (2 minutes)  
-- 📊 État actuel du projet (ce qui fonctionne/ne fonctionne pas)
-- 🚨 Bugs critiques connus
-- 📋 TODO prioritaire
-- 🔧 Commandes utiles
-- 🎯 Objectifs de la prochaine session
 
 ## 🧠 Context7 MCP Server
 
-**IMPORTANT** : Context7 est configuré pour fournir de la documentation à jour.
-- Ajoutez **"use context7"** dans vos prompts pour obtenir les dernières docs
-- Configuration détaillée dans `.claude/context7-config.md`
+**IMPORTANT** : Context7 fournit de la documentation à jour.
+- Ajoutez **"use context7"** dans vos prompts pour les dernières docs
 - Particulièrement utile pour : Next.js 15, React 18, Prisma, TypeScript, shadcn/ui
 
-## Development Commands
+## 🎯 PAROFLOW - ÉTAT ACTUEL
 
+### Architecture Clean v2.0 ✅
+- **Frontend** : React 18 + TypeScript + Vite (port 8080)
+- **Backend** : Next.js 15 + Prisma + SQLite (port 3001)
+- **UI** : shadcn/ui + Tailwind CSS médical
+- **Types** : Unifiés dans `/lib/shared-types.ts`
+- **Structure** : Modulaire par domaine métier
+
+### Modules Fonctionnels ✅
+- **Gestion Dentaire** (`/dental`) - Module révolutionnaire avec :
+  - Schéma dentaire interactif (32 dents FDI)
+  - Timeline avec 5 scénariotypes cliniques
+  - File d'attente parodontie/implantologie
+  - Recherche intelligente patients
+- **Patients** (`/patients`) - CRUD complet avec recherche
+- **Correspondants** (`/correspondants`) - Réseau médical
+- **Dashboard** (`/`) - Statistiques et actions rapides
+
+## 🧪 SYSTÈME DE TESTS ET DEBUG
+
+### Tests Automatiques
 ```bash
-npm i          # Install dependencies
-npm run dev    # Start development server on port 8080
-npm run build  # Build for production
-npm run lint   # Run ESLint
-npm run typecheck # Run TypeScript type checking (when implemented)
-npm run preview # Preview production build
+npm run monitor           # Monitoring rapide (30s)
+npm run test:core         # Tests essentiels Playwright
+npm run health-check      # Check complet monitoring + tests
 ```
 
-## Architecture Overview
+### Debug Intelligent pour Claude
+```bash
+# Logs accessibles à Claude Code :
+cat tests/logs/latest-simple-report.txt     # Rapport lisible
+cat tests/logs/simple-monitor-report.json   # Données structurées
 
-This is a dental practice management application built with React, TypeScript, and Vite. The application follows a standard React SPA architecture with client-side routing.
+# Vérifier erreurs JavaScript :
+npm run monitor  # Détecte automatiquement les bugs
+```
 
-### Tech Stack
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite with SWC
-- **UI Components**: shadcn/ui (Radix UI primitives)
-- **Styling**: Tailwind CSS with custom medical theme
-- **Routing**: React Router v6
-- **State Management**: React Query (TanStack Query)
-- **Forms**: React Hook Form with Zod validation
-- **Charts**: Recharts
-- **Flow Diagrams**: XYFlow React
+### Protection Anti-Bugs ✅
+- **Error Boundaries** sur chaque route
+- **Fallbacks robustes** dans tous les hooks
+- **Types unifiés** frontend/backend
+- **Monitoring automatique** des erreurs
 
-### Project Structure
+## 🔧 Commandes de Développement
 
-The application is organized around pages representing different sections of the dental practice:
+### Serveurs
+```bash
+npm run dev:frontend      # Frontend Vite (port 8080)
+npm run dev:api           # Backend Next.js (port 3001)
+npm run dev               # Les deux simultanément
+```
 
-- **Command Center** (`/`) - Main dashboard with statistics and quick actions
-- **Patients** (`/patients`) - Patient management
-- **Comptes Rendus** (`/reports`) - Medical reports and documentation
-- **Correspondants** (`/correspondants`) - Referral contacts management
-- **To-Do List** (`/todo`) - Task management
-- **Stock** (`/stock`) - Inventory management
+### Base de Données
+```bash
+npm run db:studio         # Interface graphique Prisma
+npm run db:push           # Appliquer schéma
+npm run db:seed           # Données de test
+```
 
-### Key Architectural Patterns
+### Production
+```bash
+npm run build             # Build complet
+npm run lint              # Vérification code
+```
 
-1. **Component Organization**: 
-   - Page components in `src/pages/`
-   - Reusable UI components in `src/components/ui/` (shadcn/ui)
-   - Custom components in `src/components/`
+## 📁 Structure Propre et Minimaliste
 
-2. **Routing**: Centralized in `src/App.tsx` with a consistent Layout wrapper providing navigation sidebar
+```
+Paroflow/
+├── lib/shared-types.ts           # 🎯 Types unifiés (source unique)
+├── app/                          # Backend Next.js + API REST
+├── src/
+│   ├── views/                    # Pages principales par domaine
+│   │   ├── DentalManagement.tsx  # Module dentaire révolutionnaire
+│   │   ├── Dashboard.tsx         # Page d'accueil
+│   │   └── Patients.tsx          # Gestion patients
+│   ├── components/               # Organisés par domaine
+│   │   ├── dental/              # DentalChart, Timeline
+│   │   ├── patients/            # PatientForm, Search
+│   │   ├── queue/               # PatientQueue
+│   │   └── common/              # Layout, CommandBar, ErrorBoundary
+│   └── hooks/                   # React Query avec fallbacks
+├── tests/                       # Tests E2E + Monitoring
+└── docs/                        # Documentation technique
+```
 
-3. **Styling**: Tailwind CSS with custom configuration for medical-themed colors and components
+## 🚀 WORKFLOW CLAUDE CODE
 
-4. **Path Aliases**: `@/` is configured to resolve to `src/` directory
+### Diagnostic Automatique
+1. **Toujours commencer par** : `npm run monitor`
+2. **Lire les logs** : `cat tests/logs/latest-simple-report.txt`
+3. **Identifier le problème** précisément
+4. **Corriger** avec les types unifiés
+5. **Valider** avec `npm run monitor`
 
-5. **Development Server**: Configured to run on port 8080 with IPv6 support
+### Bonnes Pratiques
+- ✅ **Types** : Toujours utiliser `/lib/shared-types.ts`
+- ✅ **Imports** : Paths absolus avec `@/`
+- ✅ **Composants** : Wrapper dans ErrorBoundary
+- ✅ **Hooks** : Prévoir fallbacks MOCK_DATA
+- ✅ **Tests** : Valider avec monitoring avant commit
 
-## Current Status
+### Agents Spécialisés Disponibles
+- **Debugger Agent** : Pour bugs complexes (utilise Opus)
+- **Code Reviewer** : Reviews architecture et qualité
+- **EPCT Workflow** : Pour nouvelles fonctionnalités majeures
+- **TypeScript Pro** : Types avancés et patterns
 
-This is currently a prototype/MVP with basic routing and UI components. The application needs to be evolved into a full medical practice management system with:
-- Backend API development
-- Database schema design
-- Security implementation
-- MCP server integrations
-- AI agent implementations
+## 🎯 OBJECTIFS PROCHAINES SESSIONS
 
-## Project Vision & Goals
+### Immédiat
+1. **Finaliser tests browser** : Brave/Chrome/Firefox
+2. **Scraping correspondants** : Auto-remplissage infos web
+3. **Corrections UX** : Retours utilisateur module dentaire
 
-**Paroflow** is an ambitious dental practice management system specifically designed for periodontology and implantology practices. The goal is to create a modern, AI-powered solution that can eventually replace or complement existing software like Logosw.
+### Court Terme
+1. **Migration PostgreSQL** : Recherche full-text native
+2. **Gestion documents** : Upload PDF, radios, images
+3. **Rapports intelligents** : Génération automatique IA
 
-### Primary Objectives
-1. **Phase 1**: Complete automation of secretarial tasks and medical report generation
-2. **Phase 2**: Advanced patient management with AI-assisted diagnosis and treatment planning
-3. **Phase 3**: Integration with imaging systems and multi-location practice management
-4. **Phase 4**: Potential replacement of traditional dental software with specialized parodontology/implantology focus
+### Moyen Terme
+1. **Application mobile** : Version tablet consultations
+2. **Intégration imagerie** : DICOM, radios panoramiques
+3. **IA diagnostique** : Assistance traitement et prédictions
 
-### Target Users
-- Dental practices specializing in periodontology and implantology
-- Currently using Logosw but needing more specialized and modern features
-- Practices wanting to reduce administrative burden through AI automation
+## 🧠 ARCHITECTURE VISION LONG TERME
 
-## Research Documentation
+**Paroflow** vise à révolutionner la gestion des cabinets de parodontologie/implantologie avec :
+- **IA intégrée** pour diagnostics et planning
+- **Workflows spécialisés** par scénariotypes cliniques
+- **Interface moderne** tablet-first pour consultations
+- **Automatisation complète** tâches administratives
 
-**Complete analysis available at**: [Paroflow-Research Repository](https://github.com/Philibergus/Paroflow-Research)
+## 🔐 Sécurité et Conformité
 
-This repository contains comprehensive research on:
-- MCP servers for medical applications
-- AI agents for dental practice automation  
-- Logosw competitive analysis
-- HIPAA-compliant architecture patterns
+- **HIPAA Ready** : Architecture préparée pour données médicales
+- **Chiffrement** : Données patients sécurisées
+- **Audit Logs** : Traçabilité complète des actions
+- **Accès Role-Based** : Permissions par profil médical
 
-## Recommended MCP Servers
+---
 
-Based on the research analysis, prioritize these MCP servers for development:
-
-### High Priority
-1. **Healthcare MCP Server** - Medical terminology, coding, clinical workflows
-2. **DICOM MCP Server** - Medical imaging integration (X-rays, CT scans)
-3. **Database MCP Server** - Patient data management with HIPAA compliance
-4. **PDF MCP Server** - Medical report generation and document management
-5. **Calendar MCP Server** - Advanced appointment scheduling
-
-### Medium Priority
-6. **Email MCP Server** - Patient communication automation
-7. **Web Search MCP Server** - Medical literature and drug information
-8. **File System MCP Server** - Secure document storage and organization
-
-## Recommended AI Agents
-
-From the [wshobson/agents](https://github.com/wshobson/agents) repository analysis:
-
-### Immediate Implementation
-- **Medical Report Generator Agent** - Automated report creation from templates
-- **Patient Data Manager Agent** - CRUD operations with validation
-- **Appointment Scheduler Agent** - Intelligent scheduling with conflict resolution
-- **Document Processor Agent** - OCR and data extraction from forms
-
-### Future Development
-- **Treatment Plan Agent** - AI-assisted treatment recommendations
-- **Insurance Processor Agent** - Automated claim processing
-- **Inventory Manager Agent** - Smart stock management and reordering
-
-## Target Architecture (Long-term)
-
-### Backend Stack
-- **Runtime**: Node.js with TypeScript
-- **Database**: PostgreSQL with encrypted patient data
-- **Cache**: Redis for session management
-- **API**: GraphQL with FHIR R4 compliance
-- **Authentication**: Multi-factor with role-based access
-
-### Frontend Stack
-- **Web**: React 18 + TypeScript (current)
-- **Mobile**: React Native for tablet/mobile access
-- **UI**: shadcn/ui with medical-specific components
-- **State**: React Query + Zustand for complex state
-
-### Infrastructure
-- **Cloud**: AWS/Google Cloud with HIPAA compliance
-- **Containers**: Kubernetes for scalability
-- **Security**: End-to-end encryption, audit logging
-- **Backup**: Automated, encrypted backups with disaster recovery
-
-### Integration Capabilities
-- **Medical Imaging**: DICOM integration for X-rays, CT scans
-- **Lab Systems**: HL7 FHIR for lab result integration
-- **Insurance**: Real-time eligibility verification
-- **Existing Software**: API bridges for Logosw migration
-
-## Logosw Analysis Summary
-
-**Key features to replicate/improve**:
-- Advanced charting for periodontal examinations
-- Implant planning and tracking modules
-- Comprehensive patient history management
-- Multi-practitioner scheduling system
-- Financial management and insurance processing
-
-**Competitive advantages over Logosw**:
-- AI-powered report generation and analysis
-- Modern cloud-native architecture
-- Mobile-first design for tablet use during consultations
-- Specialized parodontology/implantology workflows
-- Real-time collaboration between practitioners
-
-## Development Phases
-
-### Phase 1 (Months 1-6): Foundation
-- HIPAA-compliant infrastructure setup
-- Basic patient management with secure data storage
-- AI-powered report generation system
-- Integration with Healthcare and DICOM MCP servers
-- Multi-practitioner appointment scheduling
-
-### Phase 2 (Months 7-12): Core Features
-- Advanced periodontal charting system
-- Treatment plan generation with AI assistance
-- Financial management and insurance processing
-- Mobile application for tablet use
-- Integration with imaging systems
-
-### Phase 3 (Months 13-18): Advanced Features
-- Predictive analytics for treatment outcomes
-- Multi-location practice management
-- Advanced reporting and analytics dashboard
-- API integrations with major dental suppliers
-- Automated inventory management
-
-### Phase 4 (Months 19-24): Market Ready
-- Full Logosw feature parity + AI enhancements
-- Migration tools from existing systems
-- Advanced AI diagnostic assistance
-- Comprehensive training and support system
-- Market launch and user acquisition
-
-## Security & Compliance
-
-- **HIPAA Compliance**: All patient data encrypted at rest and in transit
-- **Access Control**: Role-based permissions with audit logging
-- **Data Backup**: Automated encrypted backups with point-in-time recovery
-- **Security Monitoring**: Real-time threat detection and response
-- **Compliance Reporting**: Automated compliance reports and audits
-
-## Project Origin
-
-This project was initially generated using Lovable.dev and has been customized for a dental practice management system focused on periodontics and implantology.
+**Version** : Paroflow v2.0 - Architecture Clean et Système de Tests Robuste  
+**Status** : ✅ Opérationnel - Prêt pour développement modules avancés  
+**Dernière Update** : 2 août 2025
