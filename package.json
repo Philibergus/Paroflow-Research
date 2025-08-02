@@ -17,6 +17,7 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed:realistic": "tsx prisma/seed-real-data.ts",
     "db:studio": "prisma studio",
     "test": "playwright test",
     "test:ui": "playwright test --ui", 

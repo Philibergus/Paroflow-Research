@@ -1,9 +1,9 @@
 {
-  "timestamp": "2025-08-02T08:54:14+02:00",
+  "timestamp": "2025-08-02T09:46:19+02:00",
   "monitoring_type": "simple_curl",
   "status": {
     "frontend": "OK",
-    "backend": "ERROR",
+    "backend": "OK",
     "html_title": "OK",
     "html_root": "OK",
     "routes": " /:OK /dental:OK /patients:OK /correspondants:OK"
@@ -17,7 +17,7 @@
   ],
   "summary": {
     "frontend_accessible": true,
-    "backend_accessible": false,
+    "backend_accessible": true,
     "html_valid": true,
     "all_routes_ok": true
   }
