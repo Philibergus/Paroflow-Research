@@ -26,4 +26,11 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    outDir: 'dist',
+  },
+  esbuild: {
+    loader: "tsx",
+    include: /src\/.*\.[tj]sx?$/,
+  },
 }));
