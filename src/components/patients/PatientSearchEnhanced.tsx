@@ -16,6 +16,13 @@ import {
 import { formatDate } from '@/lib/utils'
 import { Patient } from '@/lib/api'
 
+interface RecentPatient {
+  id: string
+  nom: string
+  prenom: string
+  lastVisit: string
+}
+
 interface PatientSearchEnhancedProps {
   onPatientSelect: (patient: Patient) => void
   onNewPatient?: () => void
@@ -120,7 +127,7 @@ export default function PatientSearchEnhanced({
     const recent = JSON.parse(localStorage.getItem('recentPatients') || '[]')
     const updated = [
       { id: patient.id, nom: patient.nom, prenom: patient.prenom, lastVisit: new Date().toISOString() },
-      ...recent.filter((p: any) => p.id !== patient.id)
+      ...recent.filter((p: RecentPatient) => p.id !== patient.id)
     ].slice(0, 10)
     localStorage.setItem('recentPatients', JSON.stringify(updated))
   }
@@ -134,13 +141,13 @@ export default function PatientSearchEnhanced({
     setTimeout(() => setIsOpen(false), 200)
   }
 
-  const getSuggestionIcon = (suggestion: any) => {
+  const getSuggestionIcon = (suggestion: Patient | RecentPatient) => {
     if (suggestion.appointmentTime) return Clock
     if (suggestion.lastVisit) return Calendar
     return User
   }
 
-  const getSuggestionSubtext = (suggestion: any) => {
+  const getSuggestionSubtext = (suggestion: Patient | RecentPatient) => {
     if (suggestion.appointmentTime) {
       return `${suggestion.appointmentTime} • ${suggestion.type}`
     }
@@ -156,7 +163,7 @@ export default function PatientSearchEnhanced({
     return null
   }
 
-  const getSuggestionBadge = (suggestion: any) => {
+  const getSuggestionBadge = (suggestion: Patient | RecentPatient) => {
     if (suggestion.appointmentTime) return 'Aujourd\'hui'
     if (suggestion.lastVisit) return 'Récent'
     return null

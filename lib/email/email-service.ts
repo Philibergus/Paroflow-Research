@@ -40,7 +40,7 @@ export interface EmailConfig {
 }
 
 export class EmailService {
-  private oauth2Client: any
+  private oauth2Client: InstanceType<typeof google.auth.OAuth2>
 
   constructor() {
     this.oauth2Client = new google.auth.OAuth2(
@@ -74,7 +74,7 @@ export class EmailService {
     refreshToken: string
     email: string
   }> {
-    const { tokens } = await this.oauth2Client.getAccessToken(code)
+    const { tokens } = await this.oauth2Client.getToken(code)
     
     // Obtenir l'email de l'utilisateur
     this.oauth2Client.setCredentials(tokens)
@@ -244,8 +244,10 @@ export class EmailService {
       }
     })
 
-    return nodemailer.createTransporter({
-      service: 'gmail',
+    return nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
       auth: {
         type: 'OAuth2',
         user: config.email,
@@ -272,7 +274,7 @@ export class EmailService {
       smtpPassword = 'mot_de_passe_a_dechiffrer'
     }
 
-    return nodemailer.createTransporter({
+    return nodemailer.createTransport({
       host: config.smtpHost,
       port: config.smtpPort,
       secure: config.smtpSecure,

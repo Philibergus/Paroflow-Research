@@ -154,7 +154,7 @@ export default function PatientForm({
     onOpenChange(false)
   }
 
-  const handleOCRDataExtracted = (extractedData: any, detectedType: 'patient' | 'correspondant' | 'commercial' | 'unknown') => {
+  const handleOCRDataExtracted = (extractedData: Record<string, unknown>, detectedType: 'patient' | 'correspondant' | 'commercial' | 'unknown') => {
     // Only auto-fill if it's detected as patient data or unknown (could be patient)
     if (detectedType === 'patient' || detectedType === 'unknown') {
       setFormData(prev => ({

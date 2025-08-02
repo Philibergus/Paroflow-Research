@@ -22,9 +22,20 @@ interface ToothData {
   treatments?: string[]
 }
 
+interface Treatment {
+  id: string
+  type: string
+  dents?: string
+  statut: string
+  dateDebut?: Date
+  dateFin?: Date
+  cout?: number
+  notes?: string
+}
+
 interface DentalChartProps {
   patientId: string
-  treatments?: any[]
+  treatments?: Treatment[]
   onToothClick?: (tooth: ToothData) => void
   onToothUpdate?: (tooth: ToothData) => void
   readOnly?: boolean
@@ -107,7 +118,7 @@ export default function DentalChart({
     setTeethData(initialData)
   }, [treatments, patientId])
 
-  const updateToothFromTreatment = (tooth: ToothData, treatment: any): ToothData => {
+  const updateToothFromTreatment = (tooth: ToothData, treatment: Treatment): ToothData => {
     const treatmentType = treatment.type.toLowerCase()
     let newStatus = tooth.status
     let newCondition = tooth.condition

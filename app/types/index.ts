@@ -90,7 +90,7 @@ export const createScenarioTypeSchema = z.object({
   nom: z.enum(scenarioNoms),
   titre: z.string().min(1, 'Le titre est requis'),
   description: z.string().optional(),
-  etapesTemplate: z.record(z.any()), // JSON object
+  etapesTemplate: z.record(z.unknown()), // JSON object
   dureeEstimee: z.number().int().positive('La durée doit être positive').optional(),
   isActive: z.boolean().default(true),
 })

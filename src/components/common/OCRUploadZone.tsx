@@ -248,14 +248,14 @@ export default function OCRUploadZone({
     if (ssnMatch) data.numeroSecurite = ssnMatch[0]
     
     // Date of birth
-    const dobMatch = text.match(/(?:né\(e\)\s+le\s+)?(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{4})/gi)
+    const dobMatch = text.match(/(?:né\(e\)\s+le\s+)?(\d{1,2}[/\-.] \d{1,2}[/\-.]\d{4})/gi)
     if (dobMatch) {
       const dateStr = dobMatch[0].replace(/né\(e\)\s+le\s+/gi, '')
-      data.dateNaissance = dateStr.replace(/[\/\-\.]/g, '-')
+      data.dateNaissance = dateStr.replace(/[/\-.]/g, '-')
     }
     
     // Name extraction (basic patterns)
-    const drMatch = text.match(/(?:Dr\.?\s+|Docteur\s+)([A-Z][a-zA-Z\s\-]+)/g)
+    const drMatch = text.match(/(?:Dr\.?\s+|Docteur\s+)([A-Z][a-zA-Z\s-]+)/g)
     if (drMatch) {
       data.nom = drMatch[0].replace(/(?:Dr\.?\s+|Docteur\s+)/g, '').trim()
     }
@@ -302,7 +302,7 @@ export default function OCRUploadZone({
       const detectedType = detectContentType(text)
       const extractedData = extractStructuredData(text)
       
-      let result: OCRResult = {
+      const result: OCRResult = {
         text: text.trim(),
         confidence,
         detectedType,

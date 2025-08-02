@@ -72,13 +72,13 @@ export default defineConfig({
   webServer: [
     {
       command: 'npm run dev:api',
-      port: 3000,
-      reuseExistingServer: !process.env.CI,
+      port: 3001,
+      reuseExistingServer: true,
     },
     {
       command: 'npm run dev:frontend',
       port: 8080,
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: true,
     }
   ],
 });
