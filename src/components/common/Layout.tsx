@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { 
   Users, 
@@ -11,11 +12,13 @@ import {
   BarChart3,
   Calendar,
   Heart,
-  Package
+  Package,
+  Command
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import CommandBar from './CommandBar'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -35,6 +38,20 @@ const navigation = [
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
+  const [showCommandBar, setShowCommandBar] = useState(false)
+
+  // Raccourci clavier global Ctrl+K pour ouvrir la recherche
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setShowCommandBar(true)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -87,13 +104,17 @@ export default function Layout({ children }: LayoutProps) {
               <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="h-5 w-5" />
               </Button>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <Input
-                  placeholder="Rechercher un patient, traitement..."
-                  className="pl-10 w-80"
-                />
-              </div>
+              <Button
+                variant="outline"
+                className="w-80 justify-start text-muted-foreground"
+                onClick={() => setShowCommandBar(true)}
+              >
+                <Search className="mr-2 h-4 w-4" />
+                Rechercher un patient, traitement...
+                <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                  <span className="text-xs">⌘</span>K
+                </kbd>
+              </Button>
             </div>
             
             <div className="flex items-center space-x-4">
@@ -118,6 +139,9 @@ export default function Layout({ children }: LayoutProps) {
           {children}
         </main>
       </div>
+
+      {/* Global Command Bar */}
+      <CommandBar open={showCommandBar} onOpenChange={setShowCommandBar} />
     </div>
   )
 }

@@ -140,6 +140,28 @@ export default function CommandBar({ open, onOpenChange }: CommandBarProps) {
         onOpenChange(false)
       },
       keywords: ['dentaire', 'dents', 'schéma', 'timeline', 'traitements', 'parodontie', 'implanto']
+    },
+    {
+      id: 'implants',
+      label: 'Gestion Implants',
+      description: 'Gérer le catalogue et stock d\'implants dentaires',
+      icon: Circle,
+      action: () => {
+        navigate('/implants')
+        onOpenChange(false)
+      },
+      keywords: ['implants', 'nobel', 'straumann', 'biotech', 'stock', 'catalogue', 'vis', 'piliers']
+    },
+    {
+      id: 'appointments',
+      label: 'Rendez-vous',
+      description: 'Gérer les rendez-vous et l\'agenda',
+      icon: Calendar,
+      action: () => {
+        navigate('/rendez-vous')
+        onOpenChange(false)
+      },
+      keywords: ['rendez-vous', 'agenda', 'planning', 'consultation', 'rdv', 'appointments']
     }
   ]
 
