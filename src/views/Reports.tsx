@@ -27,8 +27,7 @@ import {
   Users
 } from 'lucide-react'
 import { formatDate, formatCurrency } from '@/lib/utils'
-import TreatmentForm from '@/components/TreatmentForm'
-import TreatmentTimeline from '@/components/TreatmentTimeline'
+import { TreatmentForm, TreatmentTimeline } from '@/components/dental'
 import { Traitement } from '@/lib/api'
 
 export default function Reports() {

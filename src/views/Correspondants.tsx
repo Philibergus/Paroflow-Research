@@ -24,7 +24,7 @@ import {
   Stethoscope
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
-import CorrespondantForm from '@/components/CorrespondantForm'
+import { CorrespondantForm } from '@/components/common'
 import { Correspondant } from '@/lib/api'
 
 export default function Correspondants() {

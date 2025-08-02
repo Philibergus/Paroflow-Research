@@ -1,7 +1,14 @@
-import type { 
-  CreatePatientInput, 
-  UpdatePatientInput, 
-  CreateCorrespondantInput, 
+// Import des types partagés
+import type {
+  Patient,
+  Correspondant,
+  Traitement,
+  EtapeTraitement,
+  CharteDentaire,
+  FileAttente,
+  CreatePatientInput,
+  UpdatePatientInput,
+  CreateCorrespondantInput,
   UpdateCorrespondantInput,
   CreateTraitementInput,
   UpdateTraitementInput,
@@ -11,96 +18,20 @@ import type {
   CreateFileAttenteInput,
   UpdateFileAttenteInput,
   ApiResponse,
-  PaginatedResponse 
-} from '../../app/types'
+  PaginatedResponse,
+  PaginationQuery
+} from '../../lib/shared-types'
 
 const API_BASE = '/api'
 
-export interface Patient {
-  id: string
-  nom: string
-  prenom: string
-  email?: string
-  telephone?: string
-  dateNaissance: string
-  adresse?: string
-  numeroSecurite?: string
-  notes?: string
-  createdAt: string
-  updatedAt: string
-}
-
-export interface Correspondant {
-  id: string
-  nom: string
-  specialite: string
-  email?: string
-  telephone?: string
-  adresse?: string
-  notes?: string
-  createdAt: string
-  updatedAt: string
-}
-
-export interface Traitement {
-  id: string
-  patientId: string
-  patient?: Patient
-  type: string
-  dents?: string
-  statut: 'planifie' | 'en_cours' | 'termine' | 'suspendu'
-  dateDebut?: string
-  dateFin?: string
-  cout?: number
-  notes?: string
-  createdAt: string
-  updatedAt: string
-  etapes?: EtapeTraitement[]
-}
-
-export interface EtapeTraitement {
-  id: string
-  traitementId: string
-  titre: string
-  description?: string
-  date: string
-  statut: 'planifie' | 'termine' | 'reporte'
-  duree?: number
-  cout?: number
-  notes?: string
-  createdAt: string
-  updatedAt: string
-}
-
-export interface CharteDentaire {
-  id: string
-  patientId: string
-  traitementId?: string
-  numeroDent: number
-  statut: 'present' | 'extracted' | 'implant' | 'crown' | 'filling' | 'missing'
-  etat?: 'healthy' | 'caries' | 'restoration' | 'inflammation' | 'infection'
-  notes?: string
-  couleur?: string
-  dateModification: string
-  createdAt: string
-  updatedAt: string
-  patient?: Patient
-  traitement?: Traitement
-}
-
-export interface FileAttente {
-  id: string
-  patientId: string
-  type: 'periodontal' | 'implant' | 'followup' | 'emergency'
-  priorite: number
-  statut: 'waiting' | 'in_progress' | 'completed' | 'cancelled'
-  notes?: string
-  dateAjout: string
-  dateDebut?: string
-  dateFin?: string
-  createdAt: string
-  updatedAt: string
-  patient?: Patient
+// Export des types pour compatibilité
+export type {
+  Patient,
+  Correspondant,
+  Traitement,
+  EtapeTraitement,
+  CharteDentaire,
+  FileAttente
 }
 
 class ApiClient {
@@ -129,13 +60,7 @@ class ApiClient {
   }
 
   // Patients
-  async getPatients(params?: {
-    page?: number
-    limit?: number
-    search?: string
-    sortBy?: string
-    sortOrder?: 'asc' | 'desc'
-  }): Promise<PaginatedResponse<Patient>> {
+  async getPatients(params?: PaginationQuery): Promise<PaginatedResponse<Patient>> {
     const searchParams = new URLSearchParams()
     if (params?.page) searchParams.append('page', params.page.toString())
     if (params?.limit) searchParams.append('limit', params.limit.toString())
@@ -172,13 +97,7 @@ class ApiClient {
   }
 
   // Correspondants
-  async getCorrespondants(params?: {
-    page?: number
-    limit?: number
-    search?: string
-    sortBy?: string
-    sortOrder?: 'asc' | 'desc'
-  }): Promise<PaginatedResponse<Correspondant>> {
+  async getCorrespondants(params?: PaginationQuery): Promise<PaginatedResponse<Correspondant>> {
     const searchParams = new URLSearchParams()
     if (params?.page) searchParams.append('page', params.page.toString())
     if (params?.limit) searchParams.append('limit', params.limit.toString())
@@ -215,14 +134,7 @@ class ApiClient {
   }
 
   // Traitements
-  async getTraitements(params?: {
-    page?: number
-    limit?: number
-    search?: string
-    sortBy?: string
-    sortOrder?: 'asc' | 'desc'
-    patientId?: string
-  }): Promise<PaginatedResponse<Traitement>> {
+  async getTraitements(params?: PaginationQuery & { patientId?: string }): Promise<PaginatedResponse<Traitement>> {
     const searchParams = new URLSearchParams()
     if (params?.page) searchParams.append('page', params.page.toString())
     if (params?.limit) searchParams.append('limit', params.limit.toString())
@@ -271,12 +183,7 @@ class ApiClient {
   }
 
   // Dental Charts
-  async getDentalCharts(params?: {
-    page?: number
-    limit?: number
-    patientId?: string
-    traitementId?: string
-  }): Promise<PaginatedResponse<CharteDentaire>> {
+  async getDentalCharts(params?: PaginationQuery & { patientId?: string; traitementId?: string }): Promise<PaginatedResponse<CharteDentaire>> {
     const searchParams = new URLSearchParams()
     if (params?.page) searchParams.append('page', params.page.toString())
     if (params?.limit) searchParams.append('limit', params.limit.toString())
@@ -312,16 +219,7 @@ class ApiClient {
   }
 
   // Queue Management
-  async getQueue(params?: {
-    page?: number
-    limit?: number
-    search?: string
-    type?: string
-    statut?: string
-    priorite?: number
-    sortBy?: string
-    sortOrder?: 'asc' | 'desc'
-  }): Promise<PaginatedResponse<FileAttente>> {
+  async getQueue(params?: PaginationQuery & { type?: string; statut?: string; priorite?: number }): Promise<PaginatedResponse<FileAttente>> {
     const searchParams = new URLSearchParams()
     if (params?.page) searchParams.append('page', params.page.toString())
     if (params?.limit) searchParams.append('limit', params.limit.toString())

@@ -14,7 +14,7 @@ import {
   Search,
   CommandIcon
 } from 'lucide-react'
-import CommandBar from '@/components/CommandBar'
+import { CommandBar } from '@/components/common'
 
 export default function Dashboard() {
   const [showCommandBar, setShowCommandBar] = useState(false)

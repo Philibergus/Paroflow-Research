@@ -47,7 +47,7 @@ export default function CommandBar({ open, onOpenChange }: CommandBarProps) {
       description: 'Ajouter un nouveau patient au système',
       icon: Plus,
       action: () => {
-        navigate('/patients')
+        navigate('/patients?action=new')
         onOpenChange(false)
       },
       keywords: ['nouveau', 'patient', 'ajouter', 'créer']
@@ -69,7 +69,7 @@ export default function CommandBar({ open, onOpenChange }: CommandBarProps) {
       description: 'Ajouter un correspondant médical',
       icon: Plus,
       action: () => {
-        navigate('/correspondants')
+        navigate('/correspondants?action=new')
         onOpenChange(false)
       },
       keywords: ['nouveau', 'correspondant', 'médecin', 'spécialiste', 'ajouter']
@@ -128,6 +128,17 @@ export default function CommandBar({ open, onOpenChange }: CommandBarProps) {
         onOpenChange(false)
       },
       keywords: ['statistiques', 'temps', 'productivité', 'équipe', 'analytics']
+    },
+    {
+      id: 'dental-management',
+      label: 'Gestion Dentaire',
+      description: 'Module dentaire complet avec schéma et timeline',
+      icon: Circle,
+      action: () => {
+        navigate('/dental')
+        onOpenChange(false)
+      },
+      keywords: ['dentaire', 'dents', 'schéma', 'timeline', 'traitements', 'parodontie', 'implanto']
     }
   ]
 

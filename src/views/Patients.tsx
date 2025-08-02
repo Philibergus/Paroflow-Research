@@ -23,7 +23,7 @@ import {
   User
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
-import PatientForm from '@/components/PatientForm'
+import { PatientForm } from '@/components/patients'
 import { Patient } from '@/lib/api'
 
 export default function Patients() {

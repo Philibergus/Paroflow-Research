@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -14,19 +14,34 @@ import {
   CheckCircle,
   Plus,
   FileText,
-  BarChart3
+  BarChart3,
+  Command
 } from 'lucide-react'
 
 // Import our new components
-import PatientSearchEnhanced from '@/components/PatientSearchEnhanced'
-import DentalChart from '@/components/DentalChart'
-import TreatmentTimelineEnhanced from '@/components/TreatmentTimelineEnhanced'
-import PatientQueue from '@/components/PatientQueue'
+import { PatientSearchEnhanced } from '@/components/patients'
+import { DentalChart, TreatmentTimelineEnhanced } from '@/components/dental'
+import { PatientQueue } from '@/components/queue'
+import { CommandBar } from '@/components/common'
 import { Patient } from '@/lib/api'
 
 export default function DentalManagement() {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
   const [activeView, setActiveView] = useState<'dashboard' | 'patient' | 'queue'>('dashboard')
+  const [showCommandBar, setShowCommandBar] = useState(false)
+
+  // Raccourci clavier Ctrl+K pour ouvrir la recherche
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setShowCommandBar(true)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   const handlePatientSelect = (patient: Patient) => {
     setSelectedPatient(patient)
@@ -319,23 +334,39 @@ export default function DentalManagement() {
               </nav>
             </div>
 
-            {selectedPatient && (
-              <div className="flex items-center space-x-3 text-sm text-gray-600">
-                <Badge variant="outline">
-                  Patient sélectionné: {selectedPatient.prenom} {selectedPatient.nom}
-                </Badge>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => {
-                    setSelectedPatient(null)
-                    setActiveView('dashboard')
-                  }}
-                >
-                  ✕
-                </Button>
-              </div>
-            )}
+            <div className="flex items-center space-x-3">
+              {/* Bouton de recherche globale */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowCommandBar(true)}
+                className="flex items-center space-x-2"
+              >
+                <Command className="h-4 w-4" />
+                <span>Recherche globale</span>
+                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                  <span className="text-xs">⌘</span>K
+                </kbd>
+              </Button>
+
+              {selectedPatient && (
+                <div className="flex items-center space-x-3 text-sm text-gray-600">
+                  <Badge variant="outline">
+                    Patient sélectionné: {selectedPatient.prenom} {selectedPatient.nom}
+                  </Badge>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => {
+                      setSelectedPatient(null)
+                      setActiveView('dashboard')
+                    }}
+                  >
+                    ✕
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -346,6 +377,12 @@ export default function DentalManagement() {
         {activeView === 'patient' && renderPatientView()}
         {activeView === 'queue' && renderQueueView()}
       </div>
+
+      {/* Command Bar pour recherche globale */}
+      <CommandBar 
+        open={showCommandBar} 
+        onOpenChange={setShowCommandBar}
+      />
     </div>
   )
 }
