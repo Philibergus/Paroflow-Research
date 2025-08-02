@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"next dev\" \"vite --port 8080\"",
-    "dev:api": "next dev",
+    "dev": "concurrently \"next dev -p 3001\" \"vite --port 8080\"",
+    "dev:api": "next dev -p 3001",
     "dev:frontend": "vite --port 8080",
     "build": "next build && vite build",
     "build:api": "next build",
