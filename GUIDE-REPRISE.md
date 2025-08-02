@@ -37,18 +37,22 @@ npm run dev:frontend
 - **Fichiers à corriger** : `/app/api/*/route.ts` (supprimer mode insensitive)
 
 ### 📋 TODO PRIORITAIRE
-1. **Corriger le bug de recherche** (30 min)
-2. **Nettoyer les éléments business** du dashboard
-3. **Ajouter onglet Statistiques** sous Rapports
-4. **Ajouter onglet Todo** avec liaisons patients/correspondants
+1. **Corriger le bug de recherche** (30 min) - SQLite mode insensitive
 
-## 🎯 DEMANDES EN COURS
+## 🎯 MODIFICATIONS COMPLÉTÉES ✅
 
-### Modifications demandées:
-1. **Supprimer** chiffres d'affaires/business du dashboard
-2. **Ajouter** onglet "Statistiques" sous "Rapports" pour tracker temps équipe
-3. **Ajouter** onglet "Todo" pour pense-bêtes liés aux patients/correspondants
-4. **Configurer** rappels de sauvegarde GitHub automatiques
+### Dernières modifications (1er août 2025):
+1. ✅ **Supprimé** chiffres d'affaires/business du dashboard
+2. ✅ **Ajouté** onglet "Statistiques" pour tracker temps équipe
+3. ✅ **Ajouté** onglet "Todo" pour pense-bêtes liés aux patients/correspondants
+4. ✅ **Configuré** rappels de sauvegarde GitHub automatiques
+5. ✅ **Configuré** Context7 MCP Server pour documentation à jour
+
+### 🧠 Context7 MCP Server
+- **Status**: ✓ Connected et fonctionnel
+- **Usage**: Ajouter **"use context7"** dans vos prompts pour docs à jour
+- **Config**: `.claude/context7-config.md`
+- **Exemples**: `.claude/context7-usage-examples.md`
 
 ## 🔧 COMMANDES UTILES
 

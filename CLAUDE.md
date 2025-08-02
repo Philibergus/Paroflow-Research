@@ -18,6 +18,13 @@ Le guide contient :
 - 🔧 Commandes utiles
 - 🎯 Objectifs de la prochaine session
 
+## 🧠 Context7 MCP Server
+
+**IMPORTANT** : Context7 est configuré pour fournir de la documentation à jour.
+- Ajoutez **"use context7"** dans vos prompts pour obtenir les dernières docs
+- Configuration détaillée dans `.claude/context7-config.md`
+- Particulièrement utile pour : Next.js 15, React 18, Prisma, TypeScript, shadcn/ui
+
 ## Development Commands
 
 ```bash
