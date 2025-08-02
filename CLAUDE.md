@@ -32,6 +32,12 @@ Read le fichier GUIDE-REPRISE.md
   - Timeline avec 5 scénariotypes cliniques
   - File d'attente parodontie/implantologie
   - Recherche intelligente patients
+- **Module Implants** (`/implants`) - **NOUVEAU** Base de données complète :
+  - **3 marques** : Nobel Biocare, Straumann, Biotech Dental
+  - **110+ références implants** avec codes de commande exacts
+  - **47 composants prothétiques** (vis, piliers, accessoires)
+  - **Gestion stock automatisée** avec alertes et traçabilité
+  - **Sélecteur intelligent** : Marque → Système → Diamètre → Longueur
 - **Patients** (`/patients`) - CRUD complet avec recherche
 - **Correspondants** (`/correspondants`) - Réseau médical
 - **Dashboard** (`/`) - Statistiques et actions rapides
@@ -74,7 +80,10 @@ npm run dev               # Les deux simultanément
 ```bash
 npm run db:studio         # Interface graphique Prisma
 npm run db:push           # Appliquer schéma
-npm run db:seed           # Données de test
+npm run db:seed           # Données de test patients
+npm run db:seed:realistic # Données patients réelles anonymisées
+npx tsx prisma/seed-implants.ts    # Catalogue implants complet
+npx tsx prisma/seed-composants.ts  # Composants prothétiques
 ```
 
 ### Production

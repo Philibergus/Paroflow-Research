@@ -30,6 +30,7 @@ model Patient {
   documentsPatient DocumentPatient[]
   filesAttente    FileAttente[]
   implantUtilises ImplantUtilise[]
+  composantsUtilises ComposantUtilise[]
   
   @@map("patients")
 }
@@ -75,6 +76,7 @@ model Traitement {
   etapes            EtapeTraitement[]
   chartesDentaires  CharteDentaire[]
   implantUtilises   ImplantUtilise[]
+  composantsUtilises ComposantUtilise[]
   
   @@map("traitements")
 }
@@ -240,6 +242,7 @@ model SystemeImplant {
   // Relations
   marque                 MarqueImplant @relation(fields: [marqueId], references: [id], onDelete: Cascade)
   references             ReferenceImplant[]
+  composants             ComposantProsthetique[]
   
   @@unique([marqueId, codeSysteme])
   @@map("systemes_implants")
@@ -342,6 +345,7 @@ model ImplantUtilise {
   traitement         Traitement? @relation(fields: [traitementId], references: [id], onDelete: SetNull)
   reference          ReferenceImplant @relation(fields: [referenceId], references: [id], onDelete: Restrict)
   suivis             SuiviImplant[]
+  composantsUtilises ComposantUtilise[]
   
   @@map("implants_utilises")
 }
@@ -368,4 +372,137 @@ model SuiviImplant {
   implantUtilise   ImplantUtilise @relation(fields: [implantUtiliseId], references: [id], onDelete: Cascade)
   
   @@map("suivis_implants")
+}
+
+// ============================================================================
+// COMPOSANTS PROTHÉTIQUES IMPLANTAIRES
+// ============================================================================
+
+// Types de composants prothétiques (vis cicatrisation, piliers, etc.)
+model TypeComposant {
+  id          String   @id @default(cuid())
+  nom         String   @unique // "Vis de cicatrisation", "Pilier droit", "Transfert empreinte", etc.
+  categorie   String   // "CICATRISATION", "PILIER", "EMPREINTE", "VISSERIE", "ACCESSOIRE"
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  composants  ComposantProsthetique[]
+  
+  @@map("types_composants")
+}
+
+// Composants prothétiques avec codes de commande précis
+model ComposantProsthetique {
+  id                String   @id @default(cuid())
+  systemeId         String   // Lié au système d'implant (BLT, NobelActive, Kontact, etc.)
+  typeComposantId   String   // Type de composant
+  codeCommande      String   @unique // Code exact fournisseur "024.4100", "KPAZ501", etc.
+  nom               String   // "Vis cicatrisation H3mm Ø4.5", "Pilier droit 15°", etc.
+  description       String?
+  
+  // Spécifications techniques
+  materiau          String?  // "Ti Grade 4", "Zircone", "PEEK", etc.
+  dimensions        String?  // "H3mm Ø4.5", "15° L8mm", etc.
+  couleur           String?  // Code couleur si applicable
+  
+  // Compatibilité implant
+  diametresCompatibles String? // "3.5,4.3,5.0" ou "ALL" pour universel
+  plateformesCompatibles String? // "NP,RP,WP" ou "ALL"
+  
+  // Informations commerciales
+  prixUnitaire      Float?   // Prix d'achat
+  fournisseurPrincipal String? // "Nobel Biocare", "Henry Schein", etc.
+  delaiLivraison    Int?     // Jours
+  
+  // Spécifications cliniques
+  coupleSerrage     Float?   // N.cm recommandé
+  hauteurGencive    Float?   // mm si applicable
+  angulation        Float?   // Degrés si pilier angulé
+  
+  notes             String?
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  systeme           SystemeImplant @relation(fields: [systemeId], references: [id], onDelete: Cascade)
+  typeComposant     TypeComposant @relation(fields: [typeComposantId], references: [id], onDelete: Cascade)
+  stock             StockComposant?
+  utilisations      ComposantUtilise[]
+  
+  @@map("composants_prosthetiques")
+}
+
+// Gestion stock des composants prothétiques
+model StockComposant {
+  id                   String   @id @default(cuid())
+  composantId          String   @unique
+  quantiteStock        Int      @default(0)
+  seuilAlerte          Int      @default(2)
+  quantiteCommande     Int      @default(5)
+  emplacement          String?  // "Tiroir A-3", "Armoire Prothèse", etc.
+  datePeremption       DateTime? // Si applicable
+  lotFournisseur       String?
+  prixDernierAchat     Float?
+  dateDernierAchat     DateTime?
+  dateInventaire       DateTime?
+  notes                String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  
+  // Relations
+  composant            ComposantProsthetique @relation(fields: [composantId], references: [id], onDelete: Cascade)
+  mouvements           MouvementStockComposant[]
+  
+  @@map("stock_composants")
+}
+
+// Mouvements de stock composants
+model MouvementStockComposant {
+  id                 String   @id @default(cuid())
+  stockId            String
+  type               String   // "ENTREE", "SORTIE", "INVENTAIRE", "CORRECTION"
+  quantite           Int      // Positif pour entrée, négatif pour sortie
+  quantiteAvant      Int      // Stock avant mouvement
+  quantiteApres      Int      // Stock après mouvement
+  motif              String   // "Achat", "Utilisation", "Périmé", "Perdu"
+  referenceDocument  String?  // Bon commande, facture, etc.
+  utilisateurId      String?  // Qui a fait le mouvement
+  notes              String?
+  dateMovement       DateTime @default(now())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  
+  // Relations
+  stock              StockComposant @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  
+  @@map("mouvements_stock_composants")
+}
+
+// Composants utilisés sur patients (traçabilité)
+model ComposantUtilise {
+  id               String   @id @default(cuid())
+  patientId        String
+  implantUtiliseId String?  // Si lié à un implant spécifique
+  traitementId     String?  // Si lié à un traitement
+  composantId      String
+  dateUtilisation  DateTime
+  etapeTraitement  String   // "Pose implant", "Cicatrisation", "Empreinte", "Pose prothèse"
+  quantiteUtilisee Int      @default(1)
+  notes            String?
+  praticien        String?
+  isSuccess        Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relations
+  patient          Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  implantUtilise   ImplantUtilise? @relation(fields: [implantUtiliseId], references: [id], onDelete: SetNull)
+  traitement       Traitement? @relation(fields: [traitementId], references: [id], onDelete: SetNull)
+  composant        ComposantProsthetique @relation(fields: [composantId], references: [id], onDelete: Restrict)
+  
+  @@map("composants_utilises")
 }
