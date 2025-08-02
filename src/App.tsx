@@ -1,14 +1,17 @@
 import { Routes, Route } from 'react-router-dom'
 import { Layout } from './components/common'
 import Dashboard from './views/Dashboard'
-import Patients from './views/Patients'
-import Correspondants from './views/Correspondants'
-import Reports from './views/Reports'
-import Todo from './views/Todo'
-import Statistics from './views/Statistics'
-import RendezVous from './views/RendezVous'
-import DentalManagement from './views/DentalManagement'
 import { Toaster } from 'sonner'
+
+// Utiliser le vrai Dashboard maintenant
+
+const Patients = () => <div><h1 className="text-2xl font-bold">Patients</h1></div>
+const Correspondants = () => <div><h1 className="text-2xl font-bold">Correspondants</h1></div>
+const Reports = () => <div><h1 className="text-2xl font-bold">Rapports</h1></div>
+const Todo = () => <div><h1 className="text-2xl font-bold">Tâches</h1></div>
+const Statistics = () => <div><h1 className="text-2xl font-bold">Statistiques</h1></div>
+const RendezVous = () => <div><h1 className="text-2xl font-bold">Rendez-vous</h1></div>
+const DentalManagement = () => <div><h1 className="text-2xl font-bold">Gestion Dentaire</h1></div>
 
 function App() {
   return (

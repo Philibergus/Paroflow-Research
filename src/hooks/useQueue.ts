@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient, type FileAttente } from '@/lib/api'
-import type { CreateFileAttenteInput, UpdateFileAttenteInput } from '../../app/types'
+import type { CreateFileAttenteInput, UpdateFileAttenteInput } from '../../lib/shared-types'
 import { toast } from 'sonner'
 
 export function useQueue(params?: {

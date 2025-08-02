@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient, type Patient } from '@/lib/api'
-import type { CreatePatientInput, UpdatePatientInput } from '../../app/types'
+import type { CreatePatientInput, UpdatePatientInput } from '../../lib/shared-types'
 import { toast } from 'sonner'
 
 export function usePatients(params?: {

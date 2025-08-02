@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Patient } from '@/lib/api'
-import type { CreatePatientInput } from '../../app/types'
+import type { CreatePatientInput } from '../../../lib/shared-types'
 
 interface PatientFormProps {
   open: boolean

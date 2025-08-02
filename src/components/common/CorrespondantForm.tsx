@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Correspondant } from '@/lib/api'
-import type { CreateCorrespondantInput } from '../../app/types'
+import type { CreateCorrespondantInput } from '../../../lib/shared-types'
 
 interface CorrespondantFormProps {
   open: boolean
