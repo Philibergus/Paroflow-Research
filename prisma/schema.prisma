@@ -29,6 +29,7 @@ model Patient {
   chartesDentaires CharteDentaire[]
   documentsPatient DocumentPatient[]
   filesAttente    FileAttente[]
+  implantUtilises ImplantUtilise[]
   
   @@map("patients")
 }
@@ -59,6 +60,13 @@ model Traitement {
   notes             String?
   scenariotype      String?  // Type de scénario clinique (wisdom_extraction, periodontal_nonsurgical, etc.)
   scenarioEtapeCourante String? // ID de l'étape courante dans le scénario
+  
+  // Champs spécifiques implantologie
+  implantsPlanifies Int?      // Nombre implants prévus
+  implantsPoses     Int?      // Nombre implants posés
+  typeImplantologie String?   // "Unitaire", "Multiple", "All-on-4", "All-on-6"
+  guidageChirurgical Boolean? // Chirurgie guidée ou non
+  
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   
@@ -66,6 +74,7 @@ model Traitement {
   patient           Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
   etapes            EtapeTraitement[]
   chartesDentaires  CharteDentaire[]
+  implantUtilises   ImplantUtilise[]
   
   @@map("traitements")
 }
@@ -186,4 +195,177 @@ model DocumentPatient {
   patient     Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
   
   @@map("documents_patients")
+}
+
+// ============================================================================
+// MODULE IMPLANTS DENTAIRES
+// ============================================================================
+
+// Fabricants d'implants (Nobel, Straumann, BioHorizons)
+model MarqueImplant {
+  id          String   @id @default(cuid())
+  nom         String   @unique // "Nobel Biocare", "Straumann", "BioHorizons"
+  codeMarque  String   @unique // "NOBEL", "STRAUMANN", "BIOHORIZONS"
+  pays        String?  // "Suède", "Suisse", "USA"
+  siteWeb     String?
+  telephone   String?
+  email       String?
+  notes       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  systemes    SystemeImplant[]
+  
+  @@map("marques_implants")
+}
+
+// Systèmes d'implants par marque (NobelActive, BLT, Tapered Internal)
+model SystemeImplant {
+  id                     String   @id @default(cuid())
+  marqueId               String
+  nom                    String   // "NobelActive", "BLT", "Tapered Internal"
+  codeSysteme            String   // "NA", "BLT", "TLX"
+  description            String?
+  typeConnexion          String?  // "Hexagone+Morse", "CrossFit", "Interne Hex"
+  surface                String?  // "TiUnite", "SLActive", "RBT+Laser-Lok"
+  materiau               String?  // "Ti Grade 4", "Roxolid", "Ti-6Al-4V"
+  indicationsPrincipales String?  // "Immédiat", "Esthétique", "Universel"
+  dateIntroduction       DateTime?
+  isActive               Boolean  @default(true)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  
+  // Relations
+  marque                 MarqueImplant @relation(fields: [marqueId], references: [id], onDelete: Cascade)
+  references             ReferenceImplant[]
+  
+  @@unique([marqueId, codeSysteme])
+  @@map("systemes_implants")
+}
+
+// Références spécifiques avec diamètre/longueur
+model ReferenceImplant {
+  id                     String   @id @default(cuid())
+  systemeId              String
+  codeReference          String   @unique // "NA-4.3-10", "BLT-41-10", "TLX4610"
+  diametre               Float    // 3.5, 4.1, 4.6, etc. (en mm)
+  longueur               Float    // 8.0, 10.0, 10.5, etc. (en mm)
+  plateformeProsthetique String?  // "NP", "RP", "WP", "3.0", "4.5", etc.
+  connexionDiametre      Float?   // Diamètre connexion prothétique
+  couleurCoding          String?  // Code couleur fabricant
+  prixUnitaire           Float?   // Prix d'achat unitaire
+  notes                  String?
+  isActive               Boolean  @default(true)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  
+  // Relations
+  systeme                SystemeImplant @relation(fields: [systemeId], references: [id], onDelete: Cascade)
+  stock                  StockImplant?
+  implantUtilises        ImplantUtilise[]
+  
+  @@map("references_implants")
+}
+
+// Gestion des quantités et alertes stock
+model StockImplant {
+  id                   String   @id @default(cuid())
+  referenceId          String   @unique
+  quantiteStock        Int      @default(0)
+  seuilAlerte          Int      @default(2)   // Alerte si stock < seuil
+  quantiteCommande     Int      @default(5)   // Quantité standard commande
+  emplacement          String?  // "Armoire A-1", "Tiroir 3", etc.
+  datePeremption       DateTime? // Si applicable
+  lotFournisseur       String?
+  fournisseurPrincipal String?  // "Henry Schein", "GACD", etc.
+  prixDernierAchat     Float?
+  dateDernierAchat     DateTime?
+  dateInventaire       DateTime?
+  notes                String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  
+  // Relations
+  reference            ReferenceImplant @relation(fields: [referenceId], references: [id], onDelete: Cascade)
+  mouvements           MouvementStock[]
+  
+  @@map("stock_implants")
+}
+
+// Historique des mouvements de stock
+model MouvementStock {
+  id                 String   @id @default(cuid())
+  stockId            String
+  type               String   // "ENTREE", "SORTIE", "INVENTAIRE", "CORRECTION"
+  quantite           Int      // Positif pour entrée, négatif pour sortie
+  quantiteAvant      Int      // Stock avant mouvement
+  quantiteApres      Int      // Stock après mouvement
+  motif              String   // "Achat", "Utilisation", "Périmé", "Perdu"
+  referenceDocument  String?  // Bon commande, facture, etc.
+  utilisateurId      String?  // Qui a fait le mouvement
+  notes              String?
+  dateMovement       DateTime @default(now())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  
+  // Relations
+  stock              StockImplant @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  
+  @@map("mouvements_stock")
+}
+
+// Implants utilisés sur patients (traçabilité complète)
+model ImplantUtilise {
+  id                 String   @id @default(cuid())
+  patientId          String
+  traitementId       String?
+  referenceId        String
+  numeroDent         Int      // Position FDI (11, 21, 36, etc.)
+  dateChirurgie      DateTime
+  chirurgien         String?  // Nom praticien
+  torqueInsertion    Float?   // Couple d'insertion en Ncm
+  stabiliteInitiale  String?  // "Excellente", "Bonne", "Moyenne"
+  techniqueChirurgie String?  // "Conventionnelle", "Guidée", "Immédiate"
+  greffesAssociees   String?  // "ROG", "Sinus lift", "Greffe bloc", etc.
+  notes              String?
+  statut             String   @default("POSE") // "POSE", "ECHEC", "RETRAIT"
+  dateStatut         DateTime?
+  numeroLot          String?  // Lot fabricant pour traçabilité
+  isSuccess          Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  
+  // Relations
+  patient            Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  traitement         Traitement? @relation(fields: [traitementId], references: [id], onDelete: SetNull)
+  reference          ReferenceImplant @relation(fields: [referenceId], references: [id], onDelete: Restrict)
+  suivis             SuiviImplant[]
+  
+  @@map("implants_utilises")
+}
+
+// Suivi post-opératoire des implants
+model SuiviImplant {
+  id               String   @id @default(cuid())
+  implantUtiliseId String
+  dateVisite       DateTime
+  typeVisite       String   // "J+7", "1 mois", "3 mois", "6 mois", "1 an"
+  cicatrisation    String?  // "Excellente", "Bonne", "Retardée", "Problème"
+  douleur          Int?     // 0-10 échelle
+  oedeme           String?  // "Absent", "Léger", "Modéré", "Important"
+  mobilite         String?  // "Nulle", "Légère", "Importante"
+  radiographie     Boolean? // Radio prise?
+  prescription     String?  // Médicaments prescrits
+  prochaineVisite  DateTime?
+  notes            String?
+  praticien        String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relations
+  implantUtilise   ImplantUtilise @relation(fields: [implantUtiliseId], references: [id], onDelete: Cascade)
+  
+  @@map("suivis_implants")
 }

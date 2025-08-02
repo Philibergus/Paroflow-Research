@@ -10,7 +10,8 @@ import {
   CheckSquare,
   BarChart3,
   Calendar,
-  Heart
+  Heart,
+  Package
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -24,6 +25,7 @@ const navigation = [
   { name: 'Tableau de bord', href: '/', icon: LayoutDashboard },
   { name: 'Gestion Dentaire', href: '/dental', icon: Heart },
   { name: 'Patients', href: '/patients', icon: Users },
+  { name: 'Implants', href: '/implants', icon: Package },
   { name: 'Rendez-vous', href: '/rendez-vous', icon: Calendar },
   { name: 'Correspondants', href: '/correspondants', icon: UserCheck },
   { name: 'Tâches', href: '/todo', icon: CheckSquare },
