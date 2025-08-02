@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-08-02T08:54:14+02:00",
+  "monitoring_type": "simple_curl",
+  "status": {
+    "frontend": "OK",
+    "backend": "ERROR",
+    "html_title": "OK",
+    "html_root": "OK",
+    "routes": " /:OK /dental:OK /patients:OK /correspondants:OK"
+  },
+  "urls_tested": [
+    "http://localhost:8080",
+    "http://localhost:3001",
+    "http://localhost:8080/dental",
+    "http://localhost:8080/patients",
+    "http://localhost:8080/correspondants"
+  ],
+  "summary": {
+    "frontend_accessible": true,
+    "backend_accessible": false,
+    "html_valid": true,
+    "all_routes_ok": true
+  }
+}

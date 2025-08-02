@@ -19,10 +19,15 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "test": "playwright test",
-    "test:ui": "playwright test --ui",
+    "test:ui": "playwright test --ui", 
     "test:debug": "playwright test --debug",
     "test:report": "playwright show-report",
-    "test:full": "./tests/run-tests.sh"
+    "test:full": "./tests/run-tests.sh",
+    "monitor": "./tests/simple-monitor.sh",
+    "monitor:full": "node tests/console-monitor.cjs",
+    "test:core": "playwright test tests/core-functionality.spec.ts",
+    "health-check": "npm run monitor && npm run test:core",
+    "debug:logs": "cat tests/logs/latest-report.json | jq"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

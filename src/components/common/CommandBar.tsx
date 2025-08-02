@@ -17,7 +17,8 @@ import {
   FileText,
   Activity,
   CheckSquare,
-  BarChart3
+  BarChart3,
+  Circle
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -133,7 +134,7 @@ export default function CommandBar({ open, onOpenChange }: CommandBarProps) {
       id: 'dental-management',
       label: 'Gestion Dentaire',
       description: 'Module dentaire complet avec schéma et timeline',
-      icon: Circle,
+      icon: Activity,
       action: () => {
         navigate('/dental')
         onOpenChange(false)
