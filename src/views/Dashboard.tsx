@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { usePatients } from '@/hooks/usePatients'
 import { useCorrespondants } from '@/hooks/useCorrespondants'
 import { useTraitements } from '@/hooks/useTraitements'
@@ -20,6 +21,7 @@ import { DentalChart, TreatmentTimelineEnhanced } from '@/components/dental'
 import { PatientQueue } from '@/components/queue'
 
 export default function Dashboard() {
+  const navigate = useNavigate()
   const { data: patientsData } = usePatients({ limit: 1 })
   const { data: correspondantsData } = useCorrespondants({ limit: 1 })
   const { data: traitementsData } = useTraitements({ limit: 5 })
@@ -160,7 +162,12 @@ export default function Dashboard() {
                 <div className="text-center py-8">
                   <UserCheck className="h-12 w-12 text-gray-400 mx-auto mb-3" />
                   <p className="text-gray-500">Réseau médical constitué</p>
-                  <Button variant="outline" size="sm" className="mt-3">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="mt-3"
+                    onClick={() => navigate('/correspondants')}
+                  >
                     Voir les correspondants
                   </Button>
                 </div>

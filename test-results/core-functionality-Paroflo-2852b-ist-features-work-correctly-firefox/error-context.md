@@ -1,0 +1,46 @@
+# Page snapshot
+
+```yaml
+- heading "Paroflow" [level=1]
+- navigation:
+  - link "Tableau de bord":
+    - /url: /
+    - img
+    - text: Tableau de bord
+  - link "Patients":
+    - /url: /patients
+    - img
+    - text: Patients
+  - link "Implants":
+    - /url: /implants
+    - img
+    - text: Implants
+  - link "File d'attente":
+    - /url: /file-attente
+    - img
+    - text: File d'attente
+  - link "Correspondants":
+    - /url: /correspondants
+    - img
+    - text: Correspondants
+  - link "Tâches":
+    - /url: /todo
+    - img
+    - text: Tâches
+  - link "Rapports":
+    - /url: /reports
+    - img
+    - text: Rapports
+  - link "Paramètres":
+    - /url: /settings
+    - img
+    - text: Paramètres
+- paragraph: Cabinet Dentaire
+- paragraph: Système de gestion v1.0
+- banner:
+  - button "Rechercher un patient, traitement... ⌘ K":
+    - img
+    - text: Rechercher un patient, traitement... ⌘ K
+  - text: Paroflow v3.0
+- main
+```

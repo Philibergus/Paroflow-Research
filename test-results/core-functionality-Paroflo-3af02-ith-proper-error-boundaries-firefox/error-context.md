@@ -1,0 +1,77 @@
+# Page snapshot
+
+```yaml
+- heading "Paroflow" [level=1]
+- navigation:
+  - link "Tableau de bord":
+    - /url: /
+    - img
+    - text: Tableau de bord
+  - link "Patients":
+    - /url: /patients
+    - img
+    - text: Patients
+  - link "Implants":
+    - /url: /implants
+    - img
+    - text: Implants
+  - link "File d'attente":
+    - /url: /file-attente
+    - img
+    - text: File d'attente
+  - link "Correspondants":
+    - /url: /correspondants
+    - img
+    - text: Correspondants
+  - link "Tâches":
+    - /url: /todo
+    - img
+    - text: Tâches
+  - link "Rapports":
+    - /url: /reports
+    - img
+    - text: Rapports
+  - link "Paramètres":
+    - /url: /settings
+    - img
+    - text: Paramètres
+- paragraph: Cabinet Dentaire
+- paragraph: Système de gestion v1.0
+- banner:
+  - button "Rechercher un patient, traitement... ⌘ K":
+    - img
+    - text: Rechercher un patient, traitement... ⌘ K
+  - text: Paroflow v3.0
+- main:
+  - heading "Cabinet Dentaire" [level=1]
+  - paragraph: Gestion complète et vue d'ensemble
+  - heading "Patients actifs" [level=3]
+  - img
+  - text: "0"
+  - paragraph: Total des patients
+  - heading "RDV aujourd'hui" [level=3]
+  - img
+  - text: "12"
+  - paragraph: Rendez-vous planifiés
+  - heading "File d'attente" [level=3]
+  - img
+  - text: "8"
+  - paragraph: Patients en attente
+  - heading "Cas urgents" [level=3]
+  - img
+  - text: "3"
+  - paragraph: Nécessitent attention
+  - tablist:
+    - tab "Vue d'ensemble" [selected]
+    - tab "File d'attente"
+    - tab "Traitements"
+  - tabpanel "Vue d'ensemble":
+    - heading "Traitements récents" [level=3]
+    - paragraph: Les derniers traitements ajoutés
+    - paragraph: Aucun traitement récent
+    - heading "Correspondants" [level=3]
+    - paragraph: 0 professionnels référents
+    - img
+    - paragraph: Réseau médical constitué
+    - button "Voir les correspondants"
+```

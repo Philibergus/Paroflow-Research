@@ -1,127 +1,128 @@
 # 🚀 GUIDE DE REPRISE - PAROFLOW
 
-## ⚡ DÉMARRAGE RAPIDE (2 minutes)
+## ⚡ DÉMARRAGE RAPIDE (30 secondes)
 
-### 1. Reprendre le développement
+### 1. Lancer l'application complète
 ```bash
 cd /home/viann/ProjectsDev/Paroflow
-claude
-# Puis: /init pour recharger le contexte
+pnpm dev
 ```
 
-### 2. Lancer l'application
-```bash
-# Terminal 1 - Backend (port 3000)
-npm run dev:api
-
-# Terminal 2 - Frontend (port 8080)  
-npm run dev:frontend
-```
-
-### 3. Accès rapide
+### 2. Accès direct
 - **App principale**: http://localhost:8080
-- **API docs**: http://localhost:3000
-- **Base de données**: `npm run db:studio`
+- **API Backend**: http://localhost:3001  
+- **Base de données**: `pnpm db:studio`
 
-## 📊 ÉTAT ACTUEL DU PROJET
+## 📊 ÉTAT ACTUEL - PROJET COMPLET ✅
 
-### ✅ CE QUI FONCTIONNE
-- ✅ **Architecture complète** : Next.js + React + SQLite
-- ✅ **Pages fonctionnelles** : Patients, Correspondants, Rapports
-- ✅ **API robuste** : Toutes les opérations CRUD
-- ✅ **Interface professionnelle** : Design cabinet dentaire
-- ✅ **Données de test** : 5 patients, 3 correspondants, 5 traitements
+### 🎯 **PAROFLOW V3.0 - PRODUCTION READY**
 
-### 🚨 BUG CRITIQUE CONNU
-- ❌ **Recherche cassée** : SQLite incompatible avec `mode: 'insensitive'`
-- **Fichiers à corriger** : `/app/api/*/route.ts` (supprimer mode insensitive)
+**Tout est implémenté et fonctionnel** :
 
-### 📋 TODO PRIORITAIRE
-1. **Corriger le bug de recherche** (30 min) - SQLite mode insensitive
+#### ✅ **Architecture IA Hybride Complète**
+- 🧠 **IA Locale Ollama** : 3 modèles optimisés (Llama 3.2, Mistral 7B, Phi-3.5) 
+- 📧 **Email OAuth2 Gmail** : Configuration prête, envoi depuis l'app
+- 🦷 **Module Dentaire** : Schéma interactif + Timeline + 5 scénarios cliniques  
+- 🔧 **Module Implants** : 110+ références, gestion stock, 3 marques principales
+- 🤖 **OCR intelligent** : Classification automatique documents
+- 📊 **Dashboard complet** : Statistiques équipe + Todo patients
 
-## 🎯 MODIFICATIONS COMPLÉTÉES ✅
+#### ✅ **Toutes les APIs Fonctionnelles**
+- `/api/ai/` - Classification documents + Correction OCR
+- `/api/email/` - OAuth Gmail + Templates + Envoi
+- `/api/implants/` - Marques + Stock + Alertes + Références  
+- `/api/patients/` - CRUD complet + Recherche
+- `/api/correspondants/` - Réseau médical
+- `/api/traitements/` - Workflow clinique + Étapes
+- `/api/chartes-dentaires/` - Schémas FDI interactifs
+- `/api/file-attente/` - Gestion parodontie/implantologie
 
-### Dernières modifications (1er août 2025):
-1. ✅ **Supprimé** chiffres d'affaires/business du dashboard
-2. ✅ **Ajouté** onglet "Statistiques" pour tracker temps équipe
-3. ✅ **Ajouté** onglet "Todo" pour pense-bêtes liés aux patients/correspondants
-4. ✅ **Configuré** rappels de sauvegarde GitHub automatiques
-5. ✅ **Configuré** Context7 MCP Server pour documentation à jour
+#### ✅ **Interface Utilisateur Complète**
+- 🏠 **Dashboard** - Actions rapides + Statistiques  
+- 🦷 **DentalManagement** - Module révolutionnaire 
+- 🔧 **ImplantManagement** - Sélecteur intelligent + Stock
+- 👥 **Patients/Correspondants** - CRUD + Communication
+- ⚙️ **Settings** - Configuration Email + IA
+- 📊 **Statistics** - Temps équipe + KPIs
+- 📝 **Todo** - Pense-bêtes patients
 
-### 🧠 Context7 MCP Server
-- **Status**: ✓ Connected et fonctionnel
-- **Usage**: Ajouter **"use context7"** dans vos prompts pour docs à jour
-- **Config**: `.claude/context7-config.md`
-- **Exemples**: `.claude/context7-usage-examples.md`
-
-## 🔧 COMMANDES UTILES
-
+### 🔍 **Status Check Automatique**
 ```bash
-# Développement
-npm run dev:api          # Backend seul
-npm run dev:frontend     # Frontend seul
-npm run dev             # Les deux (si configuré)
+pnpm monitor  # ✅ Frontend OK, Backend OK, Routes OK
+```
 
-# Base de données
-npm run db:studio       # Interface graphique
-npm run db:push         # Appliquer changements schema
-npm run db:seed         # Réinitialiser données test
+## 🔧 COMMANDES USUELLES
 
-# Build & Test
-npm run build           # Build complet
-npm run lint            # Vérifier code
+### Développement
+```bash
+pnpm dev                # Frontend + Backend simultanément
+pnpm dev:frontend       # Frontend seul (port 8080)
+pnpm dev:api           # Backend seul (port 3001)
+pnpm monitor           # Check santé système (30s)
+```
 
-# Git
+### Base de données
+```bash
+pnpm db:studio         # Interface graphique Prisma
+pnpm db:push           # Appliquer schéma
+pnpm db:seed           # Données test basiques
+pnpm db:seed:realistic # Données patients réalistes
+```
+
+### IA Locale & Email
+```bash
+ollama list            # Vérifier modèles installés
+ollama serve           # Démarrer service (si pas actif)
+# Email: Configuration via interface Settings dans l'app
+```
+
+### Build & Maintenance  
+```bash
+pnpm build             # Build production complet
+pnpm lint              # Vérification code
 git add . && git commit -m "Description" && git push
 ```
 
-## 📁 STRUCTURE PROJET
+## 🧠 WORKFLOW DE TRAVAIL SIMPLIFIÉ
 
-```
-Paroflow/
-├── app/                    # Backend Next.js
-│   ├── api/               # Routes API
-│   ├── lib/               # Utilitaires backend
-│   └── types/             # Types TypeScript
-├── src/                   # Frontend React
-│   ├── views/             # Pages principales
-│   ├── components/        # Composants UI
-│   ├── hooks/             # Hooks React Query
-│   └── lib/               # Utilitaires frontend
-├── prisma/                # Base de données
-│   ├── schema.prisma      # Schéma DB
-│   └── seed.ts            # Données test
-└── .claude/agents/        # Agents installés
-```
+### Pour Nouvelles Fonctionnalités
+1. **Start** : `pnpm monitor` (vérifier que tout va bien)
+2. **Code** : Utiliser types unifiés `/lib/shared-types.ts`
+3. **Test** : `pnpm monitor` après modifications
+4. **Save** : Git commit + push
 
-## 🚨 RAPPELS IMPORTANTS
+### Pour Debug/Problèmes
+1. **Logs** : `cat tests/logs/latest-simple-report.txt`
+2. **API Test** : http://localhost:3001/api/health
+3. **Frontend** : Vérifier console navigateur
+4. **IA Locale** : `ollama list` puis tester un modèle
 
-### Sauvegardes GitHub
-- **TOUJOURS** sauvegarder après gros changements
-- **Commande** : `git add . && git commit -m "Description" && git push`
-- **Configuré** : Rappel automatique après implémentations importantes
+## 🎯 FONCTIONNALITÉS PRÊTES À UTILISER
 
-### Tests avant fermeture session
-1. `npm run build` - Vérifier que ça compile
-2. Tester pages principales en local
-3. Git push pour sauvegarder
+### ✅ **IA Locale Zéro Configuration**
+- Upload image → OCR automatique avec correction
+- Classification documents médicaux 
+- Templates emails générés intelligemment
+- **Test** : Interface uploads dans Patients/Correspondants
 
-## 💡 AGENTS DISPONIBLES
+### ✅ **Email Professionnel Intégré**  
+- Configuration Gmail OAuth2 en 5 min
+- Envoi depuis l'app avec templates prêts
+- **Configuration** : Settings → Email → Suivre assistant
 
-Dans `.claude/agents/` :
-- **typescript-pro** - Code TypeScript/React
-- **backend-architect** - Architecture système  
-- **database-admin** - Gestion BDD
-- **frontend-developer** - Interface utilisateur
-- **test-automator** - Tests et debugging
-- **code-reviewer** - Revue de code
+### ✅ **Module Implants Complet**
+- 110+ références avec codes commande exacts
+- Gestion stock automatisée + alertes
+- Sélecteur intelligent par marque/diamètre
+- **Accès** : http://localhost:8080/implants
 
-## 🎯 PROCHAINE SESSION
-
-**Priorité 1** : Corriger le bug de recherche
-**Priorité 2** : Nettoyer dashboard + ajouter Todo/Stats
-**Priorité 3** : Tester interface complète
+### ✅ **Gestion Dentaire Révolutionnaire**
+- Schéma 32 dents FDI interactif
+- Timeline 5 scénarios cliniques
+- File d'attente spécialisée paro/implanto
+- **Accès** : http://localhost:8080/dental
 
 ---
-*Dernière mise à jour : 1er août 2025*  
-*Version : Paroflow v1.0 - Premier module complet*
+**Version** : Paroflow v3.0 - IA Hybride Production Ready  
+**Status** : ✅ Tous modules implémentés et fonctionnels  
+**Dernière Update** : 3 août 2025

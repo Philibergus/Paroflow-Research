@@ -1,0 +1,130 @@
+# Page snapshot
+
+```yaml
+- heading "Paroflow" [level=1]
+- navigation:
+  - link "Tableau de bord":
+    - /url: /
+    - img
+    - text: Tableau de bord
+  - link "Patients":
+    - /url: /patients
+    - img
+    - text: Patients
+  - link "Implants":
+    - /url: /implants
+    - img
+    - text: Implants
+  - link "File d'attente":
+    - /url: /file-attente
+    - img
+    - text: File d'attente
+  - link "Correspondants":
+    - /url: /correspondants
+    - img
+    - text: Correspondants
+  - link "Tâches":
+    - /url: /todo
+    - img
+    - text: Tâches
+  - link "Rapports":
+    - /url: /reports
+    - img
+    - text: Rapports
+  - link "Paramètres":
+    - /url: /settings
+    - img
+    - text: Paramètres
+- paragraph: Cabinet Dentaire
+- paragraph: Système de gestion v1.0
+- banner:
+  - button "Rechercher un patient, traitement... ⌘ K":
+    - img
+    - text: Rechercher un patient, traitement... ⌘ K
+  - text: Paroflow v3.0
+- main:
+  - heading "Gestion des Implants" [level=1]
+  - paragraph: Catalogue, stock et sélection d'implants dentaires
+  - button "Nouvel Implant":
+    - img
+    - text: Nouvel Implant
+  - paragraph: Total Références
+  - paragraph: "6"
+  - img
+  - paragraph: En Stock
+  - paragraph: "6"
+  - img
+  - paragraph: Alertes Stock
+  - paragraph: "1"
+  - img
+  - paragraph: Ruptures
+  - paragraph: "0"
+  - img
+  - alert:
+    - img
+    - strong: "1 alerte(s) stock :"
+    - text: BLT-48-6
+  - tablist:
+    - tab "Sélecteur d'Implant"
+    - tab "Gestion Stock" [selected]
+    - tab "Catalogue Complet"
+  - tabpanel "Gestion Stock":
+    - img
+    - textbox "Rechercher dans le stock..."
+    - button "Actualiser"
+    - heading "État du Stock" [level=3]
+    - text: TLX3415 Biotech Dental Tapered Internal Ø3.4mm × 15mm 📍 Tiroir B-1
+    - button:
+      - img
+    - text: "6"
+    - button:
+      - img
+    - text: "Seuil:"
+    - spinbutton: "2"
+    - img
+    - text: TLX3812 Biotech Dental Tapered Internal Ø3.8mm × 12mm 📍 Tiroir B-1
+    - button:
+      - img
+    - text: "4"
+    - button:
+      - img
+    - text: "Seuil:"
+    - spinbutton: "2"
+    - img
+    - text: NA-3.5-8 Nobel Biocare NobelActive Ø3.5mm × 8mm 📍 Armoire A-1
+    - button:
+      - img
+    - text: "5"
+    - button:
+      - img
+    - text: "Seuil:"
+    - spinbutton: "2"
+    - img
+    - text: NA-4.3-8 Nobel Biocare NobelActive Ø4.3mm × 8mm 📍 Armoire A-1
+    - button:
+      - img
+    - text: "3"
+    - button:
+      - img
+    - text: "Seuil:"
+    - spinbutton: "2"
+    - img
+    - text: BLT-41-6 Straumann Bone Level Tapered (BLT) Ø4.1mm × 6mm 📍 Armoire A-2
+    - button:
+      - img
+    - text: "8"
+    - button:
+      - img
+    - text: "Seuil:"
+    - spinbutton: "2"
+    - img
+    - text: BLT-48-6 Straumann Bone Level Tapered (BLT) Ø4.8mm × 6mm 📍 Armoire A-2
+    - button:
+      - img
+    - text: "2"
+    - button:
+      - img
+    - text: "Seuil:"
+    - spinbutton: "2"
+    - img
+```

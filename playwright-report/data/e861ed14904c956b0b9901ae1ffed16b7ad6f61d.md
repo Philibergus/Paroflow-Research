@@ -1,0 +1,60 @@
+# Page snapshot
+
+```yaml
+- heading "Paroflow" [level=1]
+- navigation:
+  - link "Tableau de bord":
+    - /url: /
+    - img
+    - text: Tableau de bord
+  - link "Patients":
+    - /url: /patients
+    - img
+    - text: Patients
+  - link "Implants":
+    - /url: /implants
+    - img
+    - text: Implants
+  - link "File d'attente":
+    - /url: /file-attente
+    - img
+    - text: File d'attente
+  - link "Correspondants":
+    - /url: /correspondants
+    - img
+    - text: Correspondants
+  - link "Tâches":
+    - /url: /todo
+    - img
+    - text: Tâches
+  - link "Rapports":
+    - /url: /reports
+    - img
+    - text: Rapports
+  - link "Paramètres":
+    - /url: /settings
+    - img
+    - text: Paramètres
+- paragraph: Cabinet Dentaire
+- paragraph: Système de gestion v1.0
+- banner:
+  - button "Rechercher un patient, traitement... ⌘ K":
+    - img
+    - text: Rechercher un patient, traitement... ⌘ K
+  - text: Paroflow v3.0
+- main:
+  - heading "Correspondants" [level=1]
+  - paragraph: Gérez votre réseau de correspondants médicaux
+  - button "Nouveau correspondant":
+    - img
+    - text: Nouveau correspondant
+  - heading "Rechercher" [level=3]
+  - paragraph: Recherchez parmi vos correspondants par nom, spécialité ou email
+  - img
+  - textbox "Rechercher un correspondant..."
+  - button "Filtres par spécialité"
+  - heading "Liste des correspondants" [level=3]:
+    - img
+    - text: Liste des correspondants
+  - paragraph
+```

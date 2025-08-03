@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -17,28 +17,12 @@ import {
   X,
   Plus,
   Filter,
-  Search
+  Search,
+  Loader2
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
+import { useQueue, useUpdateQueueItem } from '@/hooks/useQueue'
 
-interface QueueItem {
-  id: string
-  patient: {
-    id: string
-    nom: string
-    prenom: string
-    telephone?: string
-    dateNaissance: string
-  }
-  type: 'periodontal' | 'implant' | 'followup' | 'emergency'
-  priorite: 1 | 2 | 3 | 4 // 1=low, 2=medium, 3=high, 4=urgent
-  statut: 'waiting' | 'in_progress' | 'completed' | 'cancelled'
-  notes?: string
-  dateAjout: string
-  dateDebut?: string
-  dateFin?: string
-  estimatedDuration?: number // in minutes
-}
 
 interface PatientQueueProps {
   onPatientSelect?: (patient: any) => void
@@ -46,124 +30,6 @@ interface PatientQueueProps {
   onUpdateStatus?: (queueId: string, status: string) => void
 }
 
-// Mock data révolutionnaire avec exemples patients réalistes
-const mockQueueData: QueueItem[] = [
-  {
-    id: '1',
-    patient: {
-      id: 'p1',
-      nom: 'Bertrand',
-      prenom: 'Sophie',
-      telephone: '06 12 34 56 78',
-      dateNaissance: '1978-11-15'
-    },
-    type: 'implant',
-    priorite: 3,
-    statut: 'waiting',
-    notes: 'Pose implant 26 - Consultation préalable effectuée. Patient anxieux, prévoir sédation.',
-    dateAjout: '2025-02-03T08:30:00Z',
-    estimatedDuration: 120
-  },
-  {
-    id: '2',
-    patient: {
-      id: 'p2',
-      nom: 'Moreau',
-      prenom: 'Antoine',
-      telephone: '01 45 78 96 32',
-      dateNaissance: '1965-04-22'
-    },
-    type: 'periodontal',
-    priorite: 2,
-    statut: 'in_progress',
-    notes: 'Détartrage sous-gingival secteur 1-2. Hygiène à améliorer.',
-    dateAjout: '2025-02-03T09:00:00Z',
-    dateDebut: '2025-02-03T10:15:00Z',
-    estimatedDuration: 75
-  },
-  {
-    id: '3',
-    patient: {
-      id: 'p3',
-      nom: 'Lefebvre',
-      prenom: 'Catherine',
-      telephone: '06 98 76 54 21',
-      dateNaissance: '1982-08-09'
-    },
-    type: 'emergency',
-    priorite: 4,
-    statut: 'waiting',
-    notes: '🚨 URGENCE - Douleur sévère 37, possible pulpite. Patient présent depuis 1h.',
-    dateAjout: '2025-02-03T11:15:00Z',
-    estimatedDuration: 45
-  },
-  {
-    id: '4',
-    patient: {
-      id: 'p4',
-      nom: 'Dupont',
-      prenom: 'Michel',
-      telephone: '01 23 45 67 89',
-      dateNaissance: '1955-12-03'
-    },
-    type: 'followup',
-    priorite: 1,
-    statut: 'waiting',
-    notes: 'Contrôle cicatrisation implant 46 (6 semaines post-op). RAS attendu.',
-    dateAjout: '2025-02-03T07:45:00Z',
-    estimatedDuration: 20
-  },
-  {
-    id: '5',
-    patient: {
-      id: 'p5',
-      nom: 'Rousseau',
-      prenom: 'Claire',
-      telephone: '06 87 65 43 21',
-      dateNaissance: '1990-03-18'
-    },
-    type: 'implant',
-    priorite: 2,
-    statut: 'waiting',
-    notes: 'Dépose implant 15 - Échec d\'ostéointégration. Repose à prévoir dans 3 mois.',
-    dateAjout: '2025-02-03T08:15:00Z',
-    estimatedDuration: 90
-  },
-  {
-    id: '6',
-    patient: {
-      id: 'p6',
-      nom: 'Garcia',
-      prenom: 'Carlos',
-      telephone: '01 56 78 90 12',
-      dateNaissance: '1975-07-25'
-    },
-    type: 'periodontal',
-    priorite: 3,
-    statut: 'waiting',
-    notes: 'Surfaçage quadrant 3-4. Patient diabétique, surveiller glycémie.',
-    dateAjout: '2025-02-03T09:30:00Z',
-    estimatedDuration: 60
-  },
-  {
-    id: '7',
-    patient: {
-      id: 'p7',
-      nom: 'Lemoine',
-      prenom: 'Isabelle',
-      telephone: '06 34 56 78 90',
-      dateNaissance: '1988-01-12'
-    },
-    type: 'followup',
-    priorite: 1,
-    statut: 'completed',
-    notes: 'Contrôle greffe osseuse 14. Excellent résultat.',
-    dateAjout: '2025-02-03T08:00:00Z',
-    dateDebut: '2025-02-03T09:45:00Z',
-    dateFin: '2025-02-03T10:00:00Z',
-    estimatedDuration: 15
-  }
-]
 
 const QUEUE_TYPES = {
   periodontal: { 
@@ -218,36 +84,46 @@ export default function PatientQueue({
   const [filter, setFilter] = useState<string>('all')
   const [search, setSearch] = useState('')
   const [viewMode, setViewMode] = useState<'compact' | 'cards' | 'timeline'>('cards')
-  const [queueData, setQueueData] = useState<QueueItem[]>(mockQueueData)
+  
+  // Optimisation de la recherche avec debouncing côté client pour une UX fluide
+  const { data: queueResponse, isLoading, error } = useQueue({
+    page: 1,
+    limit: 100,
+    type: filter !== 'all' ? filter : undefined
+  })
+  
+  const updateQueueMutation = useUpdateQueueItem()
+  
+  const queueData = queueResponse?.data || []
 
-  // Filter and sort queue data
-  const filteredQueue = queueData
-    .filter(item => {
-      if (filter !== 'all' && item.type !== filter) return false
-      if (search && !`${item.patient.prenom} ${item.patient.nom}`.toLowerCase().includes(search.toLowerCase())) {
-        return false
-      }
-      return true
-    })
-    .sort((a, b) => {
-      // Sort by priority (urgent first), then by date added
-      if (a.priorite !== b.priorite) {
-        return b.priorite - a.priorite
-      }
-      return new Date(a.dateAjout).getTime() - new Date(b.dateAjout).getTime()
-    })
+  // Filter and sort queue data avec mémorisation pour les performances
+  const filteredQueue = useMemo(() => {
+    return queueData
+      .filter(item => {
+        // Filter par search si présent
+        if (search && !`${item.patient.prenom} ${item.patient.nom} ${item.patient.telephone || ''} ${item.notes || ''}`.toLowerCase().includes(search.toLowerCase())) {
+          return false
+        }
+        return true
+      })
+      .sort((a, b) => {
+        // Sort by priority (urgent first), then by date added
+        if (a.priorite !== b.priorite) {
+          return b.priorite - a.priorite
+        }
+        return new Date(a.dateAjout).getTime() - new Date(b.dateAjout).getTime()
+      })
+  }, [queueData, search])
 
   const handleStatusUpdate = (queueId: string, newStatus: string) => {
-    setQueueData(prev => prev.map(item => 
-      item.id === queueId 
-        ? { 
-            ...item, 
-            statut: newStatus as any,
-            dateDebut: newStatus === 'in_progress' ? new Date().toISOString() : item.dateDebut,
-            dateFin: newStatus === 'completed' ? new Date().toISOString() : item.dateFin
-          }
-        : item
-    ))
+    updateQueueMutation.mutate({ 
+      id: queueId, 
+      data: { 
+        statut: newStatus,
+        dateDebut: newStatus === 'in_progress' ? new Date() : undefined,
+        dateFin: newStatus === 'completed' ? new Date() : undefined
+      }
+    })
     onUpdateStatus?.(queueId, newStatus)
   }
 
@@ -284,11 +160,53 @@ export default function PatientQueue({
     return `${diffMinutes}m`
   }
 
-  const queueStats = {
+  const queueStats = useMemo(() => ({
     total: queueData.length,
     waiting: queueData.filter(i => i.statut === 'waiting').length,
     inProgress: queueData.filter(i => i.statut === 'in_progress').length,
     urgent: queueData.filter(i => i.priorite === 4).length
+  }), [queueData])
+
+  // Gestion des états de chargement et d'erreur
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
+            <p className="text-gray-600">Chargement de la file d'attente...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="text-center py-12">
+            <div className="flex flex-col items-center space-y-4">
+              <AlertTriangle className="h-12 w-12 text-red-500" />
+              <div>
+                <h3 className="text-lg font-medium text-red-900 mb-2">
+                  Erreur de chargement
+                </h3>
+                <p className="text-red-700 mb-4">
+                  Impossible de charger la file d'attente : {error.message}
+                </p>
+                <Button 
+                  onClick={() => window.location.reload()} 
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Réessayer
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   return (

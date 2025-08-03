@@ -221,11 +221,35 @@ export default function EmailSender({
           onOpenChange(false)
         }, 2000)
       } else {
-        setMessage({ type: 'error', text: result.error || 'Erreur lors de l\'envoi' })
+        // Message d'erreur détaillé avec solution
+        let errorText = result.error || 'Erreur lors de l\'envoi'
+        
+        if (result.details) {
+          errorText += `\n\n${result.details}`
+        }
+        
+        if (result.solution) {
+          errorText += `\n\n💡 Solution: ${result.solution}`
+        }
+        
+        if (result.technicalError) {
+          errorText += `\n\n🔧 Détails techniques: ${result.technicalError}`
+        }
+        
+        setMessage({ type: 'error', text: errorText })
       }
     } catch (error) {
       console.error('Erreur envoi email:', error)
-      setMessage({ type: 'error', text: 'Erreur lors de l\'envoi de l\'email' })
+      const errorText = `Erreur de connexion lors de l'envoi de l'email.
+
+💡 Solution: Vérifiez que:
+• Les serveurs sont démarrés (pnpm dev)
+• Votre email est configuré dans Paramètres
+• Votre connexion internet fonctionne
+
+🔧 Détails techniques: ${error instanceof Error ? error.message : 'Erreur inconnue'}`
+      
+      setMessage({ type: 'error', text: errorText })
     } finally {
       setSending(false)
     }
@@ -267,7 +291,9 @@ export default function EmailSender({
         {message && (
           <Alert variant={message.type === 'error' ? 'destructive' : 'default'}>
             {message.type === 'error' ? <AlertCircle className="h-4 w-4" /> : <CheckCircle className="h-4 w-4" />}
-            <AlertDescription>{message.text}</AlertDescription>
+            <AlertDescription className="whitespace-pre-line">
+              {message.text}
+            </AlertDescription>
           </Alert>
         )}
 

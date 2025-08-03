@@ -1,0 +1,114 @@
+# Page snapshot
+
+```yaml
+- heading "Paroflow" [level=1]
+- navigation:
+  - link "Tableau de bord":
+    - /url: /
+    - img
+    - text: Tableau de bord
+  - link "Patients":
+    - /url: /patients
+    - img
+    - text: Patients
+  - link "Implants":
+    - /url: /implants
+    - img
+    - text: Implants
+  - link "File d'attente":
+    - /url: /file-attente
+    - img
+    - text: File d'attente
+  - link "Correspondants":
+    - /url: /correspondants
+    - img
+    - text: Correspondants
+  - link "Tâches":
+    - /url: /todo
+    - img
+    - text: Tâches
+  - link "Rapports":
+    - /url: /reports
+    - img
+    - text: Rapports
+  - link "Paramètres":
+    - /url: /settings
+    - img
+    - text: Paramètres
+- paragraph: Cabinet Dentaire
+- paragraph: Système de gestion v1.0
+- banner:
+  - button "Rechercher un patient, traitement... ⌘ K":
+    - img
+    - text: Rechercher un patient, traitement... ⌘ K
+  - text: Paroflow v3.0
+- main:
+  - heading "Tâches et Rappels" [level=1]
+  - paragraph: Gérez vos tâches et rappels liés aux patients et à l'équipe
+  - button "Nouvelle tâche":
+    - img
+    - text: Nouvelle tâche
+  - heading "Total tâches" [level=3]
+  - img
+  - text: "0"
+  - paragraph: Toutes les tâches
+  - heading "En attente" [level=3]
+  - img
+  - text: "0"
+  - paragraph: À commencer
+  - heading "En cours" [level=3]
+  - img
+  - text: "0"
+  - paragraph: En progression
+  - heading "Terminées" [level=3]
+  - img
+  - text: "0"
+  - paragraph: Finalisées
+  - heading "Priorité haute" [level=3]
+  - img
+  - text: "0"
+  - paragraph: Urgent
+  - heading "Filtres" [level=3]
+  - paragraph: Recherchez et filtrez vos tâches
+  - img
+  - textbox "Rechercher une tâche..."
+  - combobox:
+    - option "Tous les statuts" [selected]
+    - option "En attente"
+    - option "En cours"
+    - option "Terminé"
+  - combobox:
+    - option "Toutes les priorités" [selected]
+    - option "Faible"
+    - option "Moyenne"
+    - option "Haute"
+  - heading "Liste des tâches" [level=3]
+  - paragraph: 0 tâche
+  - img
+  - heading "Aucune tâche trouvée" [level=3]
+  - paragraph: Commencez par ajouter votre première tâche
+  - button "Ajouter une tâche":
+    - img
+    - text: Ajouter une tâche
+  - heading "Nouvelle tâche" [level=3]
+  - paragraph: Créez ou modifiez une tâche ou un rappel
+  - text: Titre de la tâche *
+  - textbox "Titre de la tâche"
+  - text: Description (optionnel)
+  - textbox "Description détaillée de la tâche"
+  - text: Priorité
+  - combobox:
+    - option "Faible"
+    - option "Moyenne" [selected]
+    - option "Haute"
+  - text: Échéance (optionnel)
+  - textbox
+  - text: Lier à (optionnel)
+  - combobox:
+    - option "Aucun lien" [selected]
+    - option "Patient"
+    - option "Correspondant"
+    - option "Membre de l'équipe"
+  - button "Annuler"
+  - button "Créer"
+```
