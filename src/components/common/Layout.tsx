@@ -7,7 +7,6 @@ import {
   LayoutDashboard, 
   Menu,
   Search,
-  Bell,
   CheckSquare,
   BarChart3,
   Calendar,
@@ -25,15 +24,13 @@ interface LayoutProps {
 }
 
 const navigation = [
-  { name: 'Tableau de bord', href: '/', icon: LayoutDashboard },
-  { name: 'Gestion Dentaire', href: '/dental', icon: Heart },
+  { name: 'Tableau de bord', href: '/', icon: Heart },
   { name: 'Patients', href: '/patients', icon: Users },
   { name: 'Implants', href: '/implants', icon: Package },
-  { name: 'Rendez-vous', href: '/rendez-vous', icon: Calendar },
+  { name: 'File d\'attente', href: '/file-attente', icon: Calendar },
   { name: 'Correspondants', href: '/correspondants', icon: UserCheck },
   { name: 'Tâches', href: '/todo', icon: CheckSquare },
   { name: 'Rapports', href: '/reports', icon: FileText },
-  { name: 'Statistiques', href: '/statistics', icon: BarChart3 },
 ]
 
 const settingsNavigation = [
@@ -147,19 +144,8 @@ export default function Layout({ children }: LayoutProps) {
               </Button>
             </div>
             
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-              </Button>
-              <div className="flex items-center space-x-2">
-                <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">DR</span>
-                </div>
-                <div className="text-sm">
-                  <p className="font-medium">Dr. Martin</p>
-                  <p className="text-gray-500">Dentiste</p>
-                </div>
-              </div>
+            <div className="flex items-center">
+              <span className="text-sm text-gray-600">Paroflow v3.0</span>
             </div>
           </div>
         </header>

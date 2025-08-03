@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import ImplantSelector from "@/components/implants/ImplantSelector"
-import { Package, Search, AlertTriangle, TrendingUp, Plus } from 'lucide-react'
+import { Package, Search, AlertTriangle, TrendingUp, Plus, Minus, Settings } from 'lucide-react'
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface ReferenceImplant {
@@ -79,9 +79,45 @@ const ImplantManagement: React.FC = () => {
 
   const getStockColor = (stock?: { quantiteStock: number; seuilAlerte: number }) => {
     if (!stock) return 'bg-gray-100 text-gray-600'
-    if (stock.quantiteStock === 0) return 'bg-red-100 text-red-700'
-    if (stock.quantiteStock <= stock.seuilAlerte) return 'bg-orange-100 text-orange-700'
-    return 'bg-green-100 text-green-700'
+    if (stock.quantiteStock === 0) return 'bg-red-500 text-white' // Rouge vif pour rupture
+    
+    const ratio = stock.quantiteStock / stock.seuilAlerte
+    if (ratio <= 0.5) return 'bg-red-400 text-white' // Rouge proche de la rupture
+    if (ratio <= 1) return 'bg-orange-400 text-white' // Orange au seuil
+    if (ratio <= 1.5) return 'bg-yellow-400 text-gray-800' // Jaune légèrement au-dessus
+    return 'bg-green-500 text-white' // Vert pour stock suffisant
+  }
+
+  // Fonction pour ajuster le stock
+  const adjustStock = async (implantId: string, adjustment: number) => {
+    try {
+      const response = await fetch(`/api/implants/stock/${implantId}/adjust`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adjustment })
+      })
+      if (response.ok) {
+        refetchStock() // Actualiser après modification
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'ajustement du stock:', error)
+    }
+  }
+
+  // Fonction pour modifier le seuil
+  const updateThreshold = async (implantId: string, newThreshold: number) => {
+    try {
+      const response = await fetch(`/api/implants/stock/${implantId}/threshold`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ threshold: newThreshold })
+      })
+      if (response.ok) {
+        refetchStock()
+      }
+    } catch (error) {
+      console.error('Erreur lors de la modification du seuil:', error)
+    }
   }
 
   const handleImplantSelect = (implant: ReferenceImplant | null) => {
@@ -260,8 +296,8 @@ const ImplantManagement: React.FC = () => {
             <CardContent>
               <div className="space-y-3">
                 {stockFiltered.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="space-y-1">
+                  <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg hover:border-blue-200 transition-colors">
+                    <div className="space-y-1 flex-1">
                       <div className="font-medium">{item.codeReference}</div>
                       <div className="text-sm text-gray-600">
                         {item.systeme.marque.nom} {item.systeme.nom}
@@ -269,16 +305,57 @@ const ImplantManagement: React.FC = () => {
                       <div className="text-sm text-gray-500">
                         Ø{item.diametre}mm × {item.longueur}mm
                       </div>
-                    </div>
-                    <div className="text-right space-y-1">
-                      <Badge className={getStockColor(item.stock)}>
-                        {item.stock?.quantiteStock || 0} unités
-                      </Badge>
                       {item.stock?.emplacement && (
                         <div className="text-xs text-gray-500">
-                          {item.stock.emplacement}
+                          📍 {item.stock.emplacement}
                         </div>
                       )}
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      {/* Contrôles stock */}
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => adjustStock(item.id, -1)}
+                          disabled={!item.stock || item.stock.quantiteStock <= 0}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        
+                        <Badge className={`${getStockColor(item.stock)} min-w-[60px] text-center font-bold`}>
+                          {item.stock?.quantiteStock || 0}
+                        </Badge>
+                        
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => adjustStock(item.id, 1)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      
+                      {/* Seuil ajustable */}
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-gray-500">Seuil:</span>
+                        <Input
+                          type="number"
+                          min="0"
+                          value={item.stock?.seuilAlerte || 5}
+                          onChange={(e) => {
+                            const newValue = parseInt(e.target.value)
+                            if (!isNaN(newValue)) {
+                              updateThreshold(item.id, newValue)
+                            }
+                          }}
+                          className="w-16 h-8 text-center text-xs"
+                        />
+                        <Settings className="h-4 w-4 text-gray-400" />
+                      </div>
                     </div>
                   </div>
                 ))}

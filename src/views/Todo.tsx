@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { usePatients } from '@/hooks/usePatients'
 import { useCorrespondants } from '@/hooks/useCorrespondants'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -96,6 +96,9 @@ export default function Todo() {
   const [linkedType, setLinkedType] = useState<'patient' | 'correspondant' | 'staff' | ''>('')
   const [linkedId, setLinkedId] = useState('')
 
+  // Ref pour auto-focus sur le champ titre
+  const titleInputRef = useRef<HTMLInputElement>(null)
+
   const { data: patientsData } = usePatients({ limit: 100 })
   const { data: correspondantsData } = useCorrespondants({ limit: 100 })
 
@@ -119,6 +122,13 @@ export default function Todo() {
   useEffect(() => {
     localStorage.setItem('paroflow-todos', JSON.stringify(todos))
   }, [todos])
+
+  // Auto-focus sur le champ titre quand le formulaire s'ouvre
+  useEffect(() => {
+    if (showForm && titleInputRef.current) {
+      titleInputRef.current.focus()
+    }
+  }, [showForm])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -535,6 +545,7 @@ export default function Todo() {
                     Titre de la tâche *
                   </label>
                   <Input
+                    ref={titleInputRef}
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Titre de la tâche"
