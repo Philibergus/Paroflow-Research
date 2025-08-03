@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-08-03T08:33:46+02:00",
+  "timestamp": "2025-08-03T09:33:51+02:00",
   "monitoring_type": "simple_curl",
   "status": {
     "frontend": "OK",

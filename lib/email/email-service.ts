@@ -40,20 +40,32 @@ export interface EmailConfig {
 }
 
 export class EmailService {
-  private oauth2Client: InstanceType<typeof google.auth.OAuth2>
+  private oauth2Client: InstanceType<typeof google.auth.OAuth2> | null = null
 
   constructor() {
-    this.oauth2Client = new google.auth.OAuth2(
-      process.env.GMAIL_CLIENT_ID,
-      process.env.GMAIL_CLIENT_SECRET,
-      process.env.GMAIL_REDIRECT_URI
-    )
+    try {
+      // Initialisation seulement si les variables d'environnement sont présentes
+      if (process.env.GMAIL_CLIENT_ID && process.env.GMAIL_CLIENT_SECRET && process.env.GMAIL_REDIRECT_URI) {
+        this.oauth2Client = new google.auth.OAuth2(
+          process.env.GMAIL_CLIENT_ID,
+          process.env.GMAIL_CLIENT_SECRET,
+          process.env.GMAIL_REDIRECT_URI
+        )
+      }
+    } catch (error) {
+      console.warn('Erreur initialisation OAuth2 Gmail:', error)
+      this.oauth2Client = null
+    }
   }
 
   /**
    * Obtient l'URL d'autorisation OAuth2 pour Gmail
    */
   getGmailAuthUrl(): string {
+    if (!this.oauth2Client) {
+      throw new Error('OAuth2 Gmail non configuré. Vérifiez les variables d\'environnement GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REDIRECT_URI.')
+    }
+
     const scopes = [
       'https://www.googleapis.com/auth/gmail.send',
       'https://www.googleapis.com/auth/userinfo.email'
