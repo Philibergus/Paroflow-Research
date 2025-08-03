@@ -203,6 +203,27 @@ test.describe('Paroflow Core Functionality', () => {
     expect(implantErrors.length).toBe(0);
   });
 
+  test('Correspondants email functionality works', async ({ page }) => {
+    await page.goto('/correspondants');
+    
+    // Vérifier que la page correspondants se charge
+    await expect(page.locator('main h1:has-text("Correspondants")')).toBeVisible();
+    
+    // Vérifier que les éléments de navigation email sont présents
+    await expect(page.locator('text=Gérez votre réseau de correspondants médicaux')).toBeVisible();
+    
+    // Vérifier que la recherche fonctionne
+    const searchInput = page.locator('input[placeholder*="Rechercher un correspondant"]');
+    await expect(searchInput).toBeVisible();
+    
+    // Vérifier que la table des correspondants est présente
+    await expect(page.locator('text=Liste des correspondants')).toBeVisible();
+    
+    // Pas d'erreurs dans la gestion des correspondants
+    const correspondantErrors = logger.getErrors();
+    expect(correspondantErrors.length).toBe(0);
+  });
+
   test.afterEach(async () => {
     // Sauvegarder tous les logs pour analyse par Claude
     const allLogs = logger.getAllLogs();

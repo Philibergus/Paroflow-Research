@@ -24,7 +24,7 @@ import {
   Stethoscope
 } from 'lucide-react'
 import { formatDate, getSpecialtyBadgeClasses } from '@/lib/utils'
-import { CorrespondantForm } from '@/components/common'
+import { CorrespondantForm, EmailSender } from '@/components/common'
 import { Correspondant } from '@/lib/api'
 
 export default function Correspondants() {
@@ -32,6 +32,8 @@ export default function Correspondants() {
   const [page, setPage] = useState(1)
   const [showForm, setShowForm] = useState(false)
   const [editingCorrespondant, setEditingCorrespondant] = useState<Correspondant | null>(null)
+  const [showEmailSender, setShowEmailSender] = useState(false)
+  const [emailingCorrespondant, setEmailingCorrespondant] = useState<Correspondant | null>(null)
 
   const { 
     data: correspondantsData, 
@@ -67,6 +69,20 @@ export default function Correspondants() {
   const handleCloseForm = () => {
     setShowForm(false)
     setEditingCorrespondant(null)
+  }
+
+  const handleSendEmail = (correspondant: Correspondant) => {
+    if (!correspondant.email) {
+      alert('Ce correspondant n\'a pas d\'adresse email renseignée.')
+      return
+    }
+    setEmailingCorrespondant(correspondant)
+    setShowEmailSender(true)
+  }
+
+  const handleCloseEmailSender = () => {
+    setShowEmailSender(false)
+    setEmailingCorrespondant(null)
   }
 
 
@@ -212,6 +228,17 @@ export default function Correspondants() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end space-x-2">
+                          {correspondant.email && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleSendEmail(correspondant)}
+                              title="Envoyer un email"
+                              className="text-blue-600 hover:text-blue-700"
+                            >
+                              <Mail className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button
                             variant="ghost"
                             size="sm"
@@ -288,6 +315,21 @@ export default function Correspondants() {
         onOpenChange={setShowForm}
         correspondant={editingCorrespondant}
         onSuccess={handleCloseForm}
+      />
+
+      {/* Email Sender Dialog */}
+      <EmailSender
+        open={showEmailSender}
+        onOpenChange={setShowEmailSender}
+        recipientEmail={emailingCorrespondant?.email || ''}
+        recipientName={`Dr. ${emailingCorrespondant?.nom || ''}`}
+        correspondantId={emailingCorrespondant?.id}
+        templateVariables={{
+          correspondant: emailingCorrespondant ? `Dr. ${emailingCorrespondant.nom}` : '',
+          specialite: emailingCorrespondant?.specialite || '',
+          praticien: 'Dr. Martin'
+        }}
+        onSuccess={handleCloseEmailSender}
       />
     </div>
   )

@@ -43,11 +43,11 @@ async function main() {
     }),
     prisma.marqueImplant.create({
       data: {
-        nom: 'BioHorizons',
-        codeMarque: 'BIOHORIZONS',
-        pays: 'USA',
-        siteWeb: 'https://www.biohorizons.com',
-        notes: 'Innovation surface Laser-Lok. Excellent rapport qualité-prix.'
+        nom: 'Biotech Dental',
+        codeMarque: 'BIOTECH',
+        pays: 'France',
+        siteWeb: 'https://www.biotech-dental.com',
+        notes: 'Implants français haut de gamme. Système Kontact et Kontact+ avec surface OsseoSpeed.'
       }
     })
   ])
@@ -155,38 +155,38 @@ async function main() {
   ])
 
   // ===========================================
-  // 4. CRÉATION DES SYSTÈMES BIOHORIZONS
+  // 4. CRÉATION DES SYSTÈMES BIOTECH DENTAL
   // ===========================================
-  console.log('🔧 Création des systèmes BioHorizons...')
+  console.log('🔧 Création des systèmes Biotech Dental...')
 
-  const systemesBioHorizons = await Promise.all([
+  const systemesBiotech = await Promise.all([
     prisma.systemeImplant.create({
       data: {
-        marqueId: marques[2].id, // BioHorizons
-        nom: 'Tapered Internal',
-        codeSysteme: 'TLX',
-        description: 'Système conique universel avec Laser-Lok',
+        marqueId: marques[2].id, // Biotech Dental
+        nom: 'Kontact',
+        codeSysteme: 'KONTACT',
+        description: 'Système implantaire français haut de gamme',
         typeConnexion: 'Interne Hexagonale',
-        surface: 'RBT + Laser-Lok',
-        materiau: 'Ti-6Al-4V ELI',
-        indicationsPrincipales: 'Polyvalence, gestion péri-implantaire'
+        surface: 'OsseoSpeed',
+        materiau: 'Titane Grade 4',
+        indicationsPrincipales: 'Placement conventionnel, excellent rapport qualité-prix'
       }
     }),
     prisma.systemeImplant.create({
       data: {
         marqueId: marques[2].id,
-        nom: 'Tapered Pro',
-        codeSysteme: 'TPR',
-        description: 'Optimisé placement immédiat post-extraction',
+        nom: 'Kontact+',
+        codeSysteme: 'KONTACT_PLUS',
+        description: 'Version améliorée du système Kontact',
         typeConnexion: 'Interne Hexagonale',
-        surface: 'RBT + Laser-Lok',
+        surface: 'OsseoSpeed+',
         materiau: 'Ti-6Al-4V ELI',
         indicationsPrincipales: 'Post-extraction immédiate'
       }
     })
   ])
 
-  console.log(`✅ ${systemesNobel.length + systemesStaumann.length + systemesBioHorizons.length} systèmes créés`)
+  console.log(`✅ ${systemesNobel.length + systemesStaumann.length + systemesBiotech.length} systèmes créés`)
 
   // ===========================================
   // 5. RÉFÉRENCES NOBEL BIOCARE - NOBELACTIVE
@@ -244,11 +244,11 @@ async function main() {
   }
 
   // ===========================================
-  // 7. RÉFÉRENCES BIOHORIZONS TAPERED INTERNAL
+  // 7. RÉFÉRENCES BIOTECH DENTAL KONTACT
   // ===========================================
-  console.log('📋 Création des références BioHorizons Tapered Internal...')
+  console.log('📋 Création des références Biotech Dental Kontact...')
 
-  const referencesBioHorizons = []
+  const referencesBiotech = []
   const diametresTLX = [3.0, 3.4, 3.8, 4.6, 5.8]
   const longueursTLX = [7.5, 9.0, 10.5, 12.0, 15.0, 18.0]
 
@@ -262,7 +262,7 @@ async function main() {
 
       const reference = await prisma.referenceImplant.create({
         data: {
-          systemeId: systemesBioHorizons[0].id, // Tapered Internal
+          systemeId: systemesBiotech[0].id, // Kontact
           codeReference: codeReference,
           diametre: diametre,
           longueur: longueur,
@@ -272,7 +272,7 @@ async function main() {
           notes: `Tapered Internal ${diametre}mm x ${longueur}mm - RBT + Laser-Lok`
         }
       })
-      referencesBioHorizons.push(reference)
+      referencesBiotech.push(reference)
     }
   }
 
@@ -287,8 +287,8 @@ async function main() {
     { referenceId: referencesNobelActive[5].id, quantite: 3, emplacement: 'Armoire A-1' },
     { referenceId: referencesBLT[6].id, quantite: 8, emplacement: 'Armoire A-2' },
     { referenceId: referencesBLT[12].id, quantite: 2, emplacement: 'Armoire A-2' },
-    { referenceId: referencesBioHorizons[10].id, quantite: 6, emplacement: 'Tiroir B-1' },
-    { referenceId: referencesBioHorizons[15].id, quantite: 4, emplacement: 'Tiroir B-1' }
+    { referenceId: referencesBiotech[10].id, quantite: 6, emplacement: 'Tiroir B-1' },
+    { referenceId: referencesBiotech[15].id, quantite: 4, emplacement: 'Tiroir B-1' }
   ]
 
   for (const stockItem of exemplesStock) {
@@ -310,18 +310,18 @@ async function main() {
   // ===========================================
   // RÉSUMÉ FINAL
   // ===========================================
-  const totalReferences = referencesNobelActive.length + referencesBLT.length + referencesBioHorizons.length
+  const totalReferences = referencesNobelActive.length + referencesBLT.length + referencesBiotech.length
 
   console.log('\\n🎉 Catalogue d\'implants initialisé avec succès !')
   console.log('📊 Résumé du catalogue :')
   console.log(`  - 3 marques principales`)
-  console.log(`  - ${systemesNobel.length + systemesStaumann.length + systemesBioHorizons.length} systèmes d'implants`)
+  console.log(`  - ${systemesNobel.length + systemesStaumann.length + systemesBiotech.length} systèmes d'implants`)
   console.log(`  - ${totalReferences} références complètes`)
   console.log(`  - ${exemplesStock.length} références en stock`)
   console.log('\\n📋 Détail par marque :')
   console.log(`  • Nobel Biocare: ${referencesNobelActive.length} références NobelActive`)
   console.log(`  • Straumann: ${referencesBLT.length} références BLT`)
-  console.log(`  • BioHorizons: ${referencesBioHorizons.length} références Tapered Internal`)
+  console.log(`  • Biotech Dental: ${referencesBiotech.length} références Kontact`)
   console.log('\\n✅ Prêt pour utilisation clinique !')
 }
 

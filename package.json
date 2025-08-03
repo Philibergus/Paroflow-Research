@@ -27,6 +27,9 @@
     "db:seed:realistic": "tsx prisma/seed-real-data.ts",
     "db:studio": "prisma studio",
     "test": "playwright test",
+    "test:unit": "vitest",
+    "test:unit:ui": "vitest --ui",
+    "test:unit:watch": "vitest --watch",
     "test:ui": "playwright test --ui",
     "test:debug": "playwright test --debug",
     "test:report": "playwright show-report",
@@ -107,6 +110,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
+    "@vitest/ui": "^3.2.4",
     "autoprefixer": "^10.4.20",
     "concurrently": "^9.2.0",
     "eslint": "^9.9.0",
@@ -114,6 +118,7 @@
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
     "ignore-loader": "^0.1.2",
+    "jsdom": "^26.1.0",
     "lovable-tagger": "^1.1.7",
     "playwright": "^1.54.2",
     "postcss": "^8.4.47",
@@ -121,6 +126,7 @@
     "tsx": "^4.20.3",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "vite": "^5.4.1",
+    "vitest": "^3.2.4"
   }
 }
