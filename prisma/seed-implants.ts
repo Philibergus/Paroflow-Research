@@ -244,32 +244,54 @@ async function main() {
   }
 
   // ===========================================
-  // 7. RÉFÉRENCES BIOTECH DENTAL KONTACT
+  // 7. RÉFÉRENCES BIOTECH DENTAL KONTACT® - CATALOGUE OFFICIEL
   // ===========================================
-  console.log('📋 Création des références Biotech Dental Kontact...')
+  console.log('📋 Création des références Biotech Dental Kontact® (catalogue officiel)...')
 
   const referencesBiotech = []
-  const diametresTLX = [3.0, 3.4, 3.8, 4.6, 5.8]
-  const longueursTLX = [7.5, 9.0, 10.5, 12.0, 15.0, 18.0]
+  
+  // Implants Kontact® - Diametres et longueurs du catalogue officiel
+  const diametresKontact = [3.0, 3.6, 4.2, 4.8, 5.4]
+  const longueursKontact = [6, 8, 10, 12, 14, 16]
 
-  for (const diametre of diametresTLX) {
-    for (const longueur of longueursTLX) {
-      const codeReference = `TLX${diametre.toString().replace('.', '')}${longueur.toString().replace('.', '')}`
-      const connexionDiametre = 
-        diametre <= 3.4 ? 3.0 :
-        diametre === 3.8 ? 3.5 :
-        diametre === 4.6 ? 4.5 : 5.7
-
+  // Création des références Kontact® standard
+  for (const diametre of diametresKontact) {
+    for (const longueur of longueursKontact) {
+      // Code référence selon catalogue : K + diamètre sans point + longueur
+      const codeReference = `K${diametre.toString().replace('.', '')}${longueur.toString().padStart(2, '0')}`
+      
       const reference = await prisma.referenceImplant.create({
         data: {
           systemeId: systemesBiotech[0].id, // Kontact
           codeReference: codeReference,
           diametre: diametre,
           longueur: longueur,
-          plateformeProsthetique: connexionDiametre.toString(),
-          connexionDiametre: connexionDiametre,
-          prixUnitaire: 280.0, // Prix indicatif
-          notes: `Tapered Internal ${diametre}mm x ${longueur}mm - RBT + Laser-Lok`
+          plateformeProsthetique: `Ø${diametre}mm`,
+          connexionDiametre: diametre === 3.0 ? 2.8 : diametre === 3.6 ? 3.3 : diametre === 4.2 ? 3.8 : diametre === 4.8 ? 4.3 : 4.8,
+          prixUnitaire: 280.0,
+          notes: `Kontact® Ø${diametre}mm L${longueur}mm - Surface OsseoSpeed`
+        }
+      })
+      referencesBiotech.push(reference)
+    }
+  }
+
+  // Création des références Kontact S® (version switch-platform)
+  for (const diametre of diametresKontact) {
+    for (const longueur of longueursKontact) {
+      // Code référence Kontact S® : K + diamètre sans point + longueur + S
+      const codeReference = `K${diametre.toString().replace('.', '')}${longueur.toString().padStart(2, '0')}S`
+      
+      const reference = await prisma.referenceImplant.create({
+        data: {
+          systemeId: systemesBiotech[1].id, // Kontact+
+          codeReference: codeReference,
+          diametre: diametre,
+          longueur: longueur,
+          plateformeProsthetique: `Ø${diametre}mm`,
+          connexionDiametre: diametre === 3.0 ? 2.8 : diametre === 3.6 ? 3.3 : diametre === 4.2 ? 3.8 : diametre === 4.8 ? 4.3 : 4.8,
+          prixUnitaire: 320.0,
+          notes: `Kontact S® Ø${diametre}mm L${longueur}mm - Switch-platform, Surface OsseoSpeed`
         }
       })
       referencesBiotech.push(reference)
@@ -308,20 +330,80 @@ async function main() {
   console.log('✅ Exemples de stock créés')
 
   // ===========================================
+  // 9. INSTRUMENTS CHIRURGICAUX BIOTECH DENTAL
+  // ===========================================
+  console.log('🔧 Création des instruments chirurgicaux Biotech Dental...')
+
+  // Instruments de base pour système Kontact® selon catalogue officiel
+  const instrumentsChirurgicaux = [
+    // Forets spiralés
+    { code: 'FS20', nom: 'Foret spiralé Ø2.0mm', type: 'Foret', usage: 'Perçage initial' },
+    { code: 'FS28', nom: 'Foret spiralé Ø2.8mm', type: 'Foret', usage: 'Préparation implant Ø3.0mm' },
+    { code: 'FS33', nom: 'Foret spiralé Ø3.3mm', type: 'Foret', usage: 'Préparation implant Ø3.6mm' },
+    { code: 'FS38', nom: 'Foret spiralé Ø3.8mm', type: 'Foret', usage: 'Préparation implant Ø4.2mm' },
+    { code: 'FS43', nom: 'Foret spiralé Ø4.3mm', type: 'Foret', usage: 'Préparation implant Ø4.8mm' },
+    { code: 'FS48', nom: 'Foret spiralé Ø4.8mm', type: 'Foret', usage: 'Préparation implant Ø5.4mm' },
+    
+    // Tarauds
+    { code: 'T30', nom: 'Taraud Ø3.0mm', type: 'Taraud', usage: 'Filetage implant Ø3.0mm' },
+    { code: 'T36', nom: 'Taraud Ø3.6mm', type: 'Taraud', usage: 'Filetage implant Ø3.6mm' },
+    { code: 'T42', nom: 'Taraud Ø4.2mm', type: 'Taraud', usage: 'Filetage implant Ø4.2mm' },
+    { code: 'T48', nom: 'Taraud Ø4.8mm', type: 'Taraud', usage: 'Filetage implant Ø4.8mm' },
+    { code: 'T54', nom: 'Taraud Ø5.4mm', type: 'Taraud', usage: 'Filetage implant Ø5.4mm' },
+    
+    // Instruments de pose
+    { code: 'TORR', nom: 'Clé dynamométrique', type: 'Pose', usage: 'Pose contrôlée 15-45 Ncm' },
+    { code: 'RATCHET', nom: 'Ratchet chirurgical', type: 'Pose', usage: 'Pose manuelle implants' },
+    { code: 'MOUNT', nom: 'Porte-implant', type: 'Pose', usage: 'Manipulation stérile implant' },
+    
+    // Instruments prothétiques
+    { code: 'HEX12', nom: 'Tournevis hexagonal 1.2mm', type: 'Prothétique', usage: 'Serrage vis prothétiques' },
+    { code: 'HEX20', nom: 'Tournevis hexagonal 2.0mm', type: 'Prothétique', usage: 'Serrage piliers' },
+    { code: 'CONTRA', nom: 'Contre-angle chirurgical', type: 'Pose', usage: 'Pose implant assistée' }
+  ]
+
+  // Créer les instruments comme références spéciales
+  for (const instrument of instrumentsChirurgicaux) {
+    await prisma.referenceImplant.create({
+      data: {
+        systemeId: systemesBiotech[0].id, // Associé au système Kontact
+        codeReference: instrument.code,
+        diametre: 0, // Pas applicable pour instruments
+        longueur: 0, // Pas applicable pour instruments
+        plateformeProsthetique: 'Instrument',
+        connexionDiametre: 0,
+        prixUnitaire: instrument.type === 'Foret' ? 45.0 : 
+                     instrument.type === 'Taraud' ? 85.0 :
+                     instrument.type === 'Pose' ? 120.0 : 65.0,
+        notes: `${instrument.nom} - ${instrument.usage}`
+      }
+    })
+  }
+
+  console.log(`✅ ${instrumentsChirurgicaux.length} instruments chirurgicaux créés`)
+
+  // ===========================================
   // RÉSUMÉ FINAL
   // ===========================================
   const totalReferences = referencesNobelActive.length + referencesBLT.length + referencesBiotech.length
+  const totalInstruments = instrumentsChirurgicaux.length
 
   console.log('\\n🎉 Catalogue d\'implants initialisé avec succès !')
   console.log('📊 Résumé du catalogue :')
   console.log(`  - 3 marques principales`)
   console.log(`  - ${systemesNobel.length + systemesStaumann.length + systemesBiotech.length} systèmes d'implants`)
-  console.log(`  - ${totalReferences} références complètes`)
+  console.log(`  - ${totalReferences} références implants`)
+  console.log(`  - ${totalInstruments} instruments chirurgicaux Biotech`)
   console.log(`  - ${exemplesStock.length} références en stock`)
   console.log('\\n📋 Détail par marque :')
   console.log(`  • Nobel Biocare: ${referencesNobelActive.length} références NobelActive`)
   console.log(`  • Straumann: ${referencesBLT.length} références BLT`)
-  console.log(`  • Biotech Dental: ${referencesBiotech.length} références Kontact`)
+  console.log(`  • Biotech Dental: ${referencesBiotech.length} références Kontact® + ${totalInstruments} instruments`)
+  console.log('\\n🔧 Instruments Biotech Dental inclus :')
+  console.log(`  • Forets spiralés (6 diamètres)`)
+  console.log(`  • Tarauds (5 diamètres)`)
+  console.log(`  • Instruments de pose (3 types)`)
+  console.log(`  • Instruments prothétiques (3 types)`)
   console.log('\\n✅ Prêt pour utilisation clinique !')
 }
 
